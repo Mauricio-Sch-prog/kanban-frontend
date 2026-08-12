@@ -1,4 +1,5 @@
 "use client"
+import Container from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { apiFetch } from "@/services/api";
 import { useRouter } from "next/navigation";
@@ -10,12 +11,22 @@ export default function Signup() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [authPassword, setAuthPassword] = useState('');
 
     async function handleSignup(e: React.FormEvent) {
       e.preventDefault();
 
+      if(password.length < 12){
+        return console.log("Password must contain 12 or more characters");
+        
+      }
+
+      if(password !== authPassword){
+        return console.log("Confirm your password");
+      }
+
       try {
-      await apiFetch("/user", {
+      await apiFetch("/auth/signup", {
         method: "POST",
         body: JSON.stringify({
     name: name,
@@ -34,29 +45,42 @@ export default function Signup() {
 
 
     return (
-        <div className="flex h-screen items-center justify-center">
+        <Container className="flex h-screen items-center justify-center">
             <form 
             onSubmit={handleSignup}
             className="bg-gray-900"
             >
 
-            <Input type="text" 
+            <Input 
+            type="text" 
             value={name}
             onChange={(e) => setName(e.target.value)}
+            placeholder="Place your name..."
             />
 
-            <Input type="email" 
+            <Input 
+            type="email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="Place your email..."
             />
 
-            <Input type="password" 
+            <Input 
+            type="password" 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Place your password..."
+            />
+
+            <Input 
+            type="password" 
+            value={authPassword}
+            onChange={(e) => setAuthPassword(e.target.value)}
+            placeholder="confirm password..."
             />
 
             <button>Sign Up</button>
             </form>
-        </div>
+        </Container>
     )
 }

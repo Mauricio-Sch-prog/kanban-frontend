@@ -1,4 +1,5 @@
 "use client"
+import Container from "@/components/ui/container";
 import { Input } from "@/components/ui/input";
 import { apiFetch } from "@/services/api";
 import { useRouter } from "next/navigation";
@@ -14,7 +15,7 @@ export default function Login() {
       e.preventDefault();
 
       try {
-      await apiFetch("/auth", {
+      await apiFetch("/auth/login", {
         method: "POST",
         body: JSON.stringify({
     email : email,
@@ -23,7 +24,7 @@ export default function Login() {
 
       });
 
-    //   router.push("/dashboard");
+      router.push("/dashboard");
     } catch (err) {
       console.error(err);
       alert("Login failed");
@@ -32,7 +33,7 @@ export default function Login() {
 
 
     return (
-        <div className="flex h-screen items-center justify-center">
+        <Container>
             <form 
             onSubmit={handleLogin}
             className="bg-gray-900"
@@ -50,6 +51,6 @@ export default function Login() {
 
             <button>Login</button>
             </form>
-        </div>
+        </Container>
     )
 }
