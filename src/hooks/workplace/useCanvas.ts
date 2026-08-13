@@ -11,6 +11,8 @@ interface Camera {
 }
 
 export function useCanvas(boards: Board[]) {
+
+  const [isDragging, setIsDragging] = useState(false);
   const [camera, setCamera] = useState<Camera>({
     x: 0,
     y: 0,
@@ -130,6 +132,7 @@ export function useCanvas(boards: Board[]) {
   }, [isPanning]);
 
   const zoomAt = (e: React.WheelEvent) => {
+    if(isDragging) return;
     e.preventDefault();
 
     setCamera((prev) => {
@@ -155,11 +158,14 @@ export function useCanvas(boards: Board[]) {
   return {
     camera,
     isPanning,
+    isDragging,
 
     startPan,
     pan,
     stopPan,
     zoomAt,
+
+    setIsDragging,
 
     screenToWorld,
     worldToScreen,

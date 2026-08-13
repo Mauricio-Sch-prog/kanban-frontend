@@ -8,6 +8,7 @@ import { useUpdateBoard } from '@/hooks/workplace/board/useUpdateBoard';
 import Viewport from './Viewport';
 import World from './World';
 import { useCanvas } from '@/hooks/workplace/useCanvas';
+import { useDisableBrowserZoom } from '@/hooks/workplace/useDisableBrowserZoom';
 
 export default function Workspace() {
   const updateBoardMutation = useUpdateBoard();
@@ -17,12 +18,13 @@ export default function Workspace() {
     const { source, transform } = event.operation;
     const { x, y } = transform;
     const board = boards.find((board: Board) => board.id === source?.id);
+
     if (!board) {
       console.error('Board not found:', source?.id);
       return;
     }
-    const newPositionX = board.positionX + x;
-    const newPositionY = board.positionY + y;
+    const newPositionX = board.positionX + x / canvas.camera.zoom;
+    const newPositionY = board.positionY + y / canvas.camera.zoom;
     updateBoardMutation.mutate({
       id: source?.id as string,
       positionX: newPositionX,
@@ -30,55 +32,52 @@ export default function Workspace() {
     });
   };
 
-  // const { data: boards = [], isLoading, error } = useBoards();
-
-  const boards = [
-    {
-      id: 'numba 1',
-      name: 'numb',
-      positionX: 100,
-      positionY: 100,
-      height: 300,
-      width: 300,
-    },
-    {
-      id: 'numba 2',
-      name: 'numb',
-      positionX: 200,
-      positionY: 200,
-      height: 300,
-      width: 300,
-    },
-  ];
+  const { data: boards = [], isLoading, error } = useBoards();
 
   const canvas = useCanvas(boards);
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
+  useDisableBrowserZoom();
 
-  // if (error) {
-  //   return <div>Error loading boards</div>;
-  // }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading boards</div>;
+  }
 
   return (
-    <Viewport
-      onPointerDown={canvas.startPan}
-      onPointerMove={canvas.pan}
-      onPointerUp={canvas.stopPan}
-      onPointerCancel={canvas.stopPan}
-      onWheel={canvas.zoomAt}
+    <DragDropProvider
+      onDragStart={() => {
+        canvas.setIsDragging(true);
+      }}
+      onDragEnd={(event) => {
+        canvas.setIsDragging(false);
+
+        handleDragEnd(event);
+      }}
+      onDragCancel={() => {
+        canvas.setIsDragging(false);
+      }}
     >
-      <World camera={canvas.camera}>
-        {boards.map((board: Board) => (
-          <BoardCard key={board.id} board={board} />
-        ))}
-      </World>
-    </Viewport>
+      <Viewport
+        onPointerDown={canvas.startPan}
+        onPointerMove={canvas.pan}
+        onPointerUp={canvas.stopPan}
+        onPointerCancel={canvas.stopPan}
+        onWheel={canvas.zoomAt}
+      >
+        <World camera={canvas.camera}>
+          {boards.map((board: Board) => (
+            <BoardCard key={board.id} board={board} />
+          ))}
+        </World>
+      </Viewport>
+    </DragDropProvider>
   );
 }
 
-// <DragDropProvider onDragEnd={handleDragEnd}>
+//
 //   <BoardCanvas
 //     id="canvas"
 //     style={{
@@ -93,4 +92,4 @@ export default function Workspace() {
 //   >
 //
 //   </BoardCanvas>
-// </DragDropProvider>
+//
