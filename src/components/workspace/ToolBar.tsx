@@ -1,8 +1,7 @@
 'use client';
 
-import { apiFetch } from '@/services/api';
 import { Button } from '../ui/Button';
-import { useCreateBoard } from '@/hooks/board/useCreateBoard';
+import { useCreateBoard } from '@/hooks/workplace/board/useCreateBoard';
 
 type DivProps = React.HTMLAttributes<HTMLDivElement>;
 
