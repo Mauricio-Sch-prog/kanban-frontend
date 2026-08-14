@@ -1,4 +1,5 @@
-import { Board, getContentBounds } from '@/lib/utils';
+import { getContentBounds } from '@/lib/utils';
+import { Board } from '@/types/board';
 import { useEffect, useRef, useState } from 'react';
 
 const MIN_ZOOM = 0.1;
@@ -11,7 +12,6 @@ interface Camera {
 }
 
 export function useCanvas(boards: Board[]) {
-
   const [isDragging, setIsDragging] = useState(false);
   const [camera, setCamera] = useState<Camera>({
     x: 0,
@@ -132,8 +132,7 @@ export function useCanvas(boards: Board[]) {
   }, [isPanning]);
 
   const zoomAt = (e: React.WheelEvent) => {
-    if(isDragging) return;
-    e.preventDefault();
+    if (isDragging) return;
 
     setCamera((prev) => {
       const mouseX = e.clientX;
@@ -145,13 +144,16 @@ export function useCanvas(boards: Board[]) {
 
       const newZoom = clamp(prev.zoom * zoomFactor, MIN_ZOOM, MAX_ZOOM);
 
-      return {
+      const nextCamera = {
         zoom: newZoom,
 
         x: worldPoint.x - mouseX / newZoom,
 
         y: worldPoint.y - mouseY / newZoom,
       };
+      console.log('aaaa');
+      
+      return clampCamera(nextCamera);
     });
   };
 
