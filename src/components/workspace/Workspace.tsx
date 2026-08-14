@@ -9,6 +9,8 @@ import Viewport from './Viewport';
 import World from './World';
 import { useCanvas } from '@/hooks/workplace/useCanvas';
 import { useDisableBrowserZoom } from '@/hooks/workplace/useDisableBrowserZoom';
+import useSelect from '@/hooks/workplace/useSelect';
+import AccessibleContextMenu from './ContextMenu';
 
 export default function Workspace() {
   const updateBoardMutation = useUpdateBoard();
@@ -35,6 +37,7 @@ export default function Workspace() {
   const { data: boards = [], isLoading, error } = useBoards();
 
   const canvas = useCanvas(boards);
+  const select = useSelect();
 
   useDisableBrowserZoom();
 
@@ -53,7 +56,6 @@ export default function Workspace() {
       }}
       onDragEnd={(event) => {
         canvas.setIsDragging(false);
-
         handleDragEnd(event);
       }}
       onDragCancel={() => {
@@ -61,17 +63,22 @@ export default function Workspace() {
       }}
     >
       <Viewport
-        onPointerDown={canvas.startPan}
+        onPointerDown={(e) => {
+          const isSelectable = select.selectElement(e);
+          if (!isSelectable) canvas.startPan(e);
+        }}
         onPointerMove={canvas.pan}
         onPointerUp={canvas.stopPan}
         onPointerCancel={canvas.stopPan}
         onWheel={canvas.zoomAt}
       >
-        <World camera={canvas.camera}>
-          {boards.map((board: Board) => (
-            <BoardCard key={board.id} board={board} />
-          ))}
-        </World>
+        <AccessibleContextMenu>
+          <World camera={canvas.camera}>
+            {boards.map((board: Board) => (
+              <BoardCard key={board.id} board={board} select={select.value} />
+            ))}
+          </World>
+        </AccessibleContextMenu>
       </Viewport>
     </DragDropProvider>
   );
