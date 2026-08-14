@@ -92,6 +92,7 @@ export function useCanvas(boards: Board[]) {
   };
 
   const pan = (e: React.MouseEvent) => {
+    if (e.button === 2) return;
     if (!isPanning) return;
 
     const dx = e.clientX - lastPointer.current.x;
@@ -152,7 +153,7 @@ export function useCanvas(boards: Board[]) {
         y: worldPoint.y - mouseY / newZoom,
       };
       console.log('aaaa');
-      
+
       return clampCamera(nextCamera);
     });
   };
