@@ -1,6 +1,6 @@
 'use client';
 
-import BoardCard from '@/components/workspace/BoardCard';
+import BoardCard from '@/components/workspace/cards/BoardCard';
 import { DragDropProvider, DragEndEvent } from '@dnd-kit/react';
 import { Board } from '@/types/board';
 import { useBoards } from '@/hooks/workplace/board/useBoard';
@@ -76,20 +76,3 @@ export default function Workspace() {
     </DragDropProvider>
   );
 }
-
-//
-//   <BoardCanvas
-//     id="canvas"
-//     style={{
-//       width: '5000px',
-//       height: '5000px',
-//       transform: `translate(${camera.x}px, ${camera.y}px)`,
-//     }}
-//     className="relative"
-//     onMouseDown={handleMouseDown}
-//     onMouseMove={handleMouseMove}
-//     onMouseUp={handleMouseUp}
-//   >
-//
-//   </BoardCanvas>
-//

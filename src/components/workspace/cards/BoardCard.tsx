@@ -20,7 +20,10 @@ export default function BoardCard({ board }: BoardCardProps) {
   return (
     <div
       ref={ref}
-      className="w-64 rounded-lg border bg-black p-4 shadow"
+      onPointerDown={(e) => {
+        e.stopPropagation();
+      }}
+      className="absolute w-64 rounded-lg border bg-black p-4 shadow"
       style={{
         position: 'absolute',
         left: board.positionX,

@@ -1,18 +1,13 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function apiFetch(
-  path: string,
-  options: RequestInit = {}
-) {
-
+export async function apiFetch(path: string, options: RequestInit = {}) {
   console.log(`${API_URL}${path}`);
-  
 
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
-    credentials: "include",
+    credentials: 'include',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...(options.headers || {}),
     },
   });
