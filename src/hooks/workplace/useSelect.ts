@@ -1,26 +1,60 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-export default function useSelect() {
-  const [value, setValue] = useState<string | null>(null);
+export type UseSelect = {
+  value: {
+    id: string;
+    type: string;
+    isEditable: boolean;
+  };
+  selectElement: (e: React.PointerEvent<HTMLDivElement>) => boolean;
+  selectFromTarget: (target: EventTarget | null) => boolean;
+  toggleEdit: () => void;
+};
 
-  const selectElement = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-    const target = e.target as HTMLElement;
+export default function useSelect(): UseSelect {
+  const [value, setValue] = useState({
+    id: '',
+    type: '',
+    isEditable: false,
+  });
 
-    const keyElement = target.closest<HTMLElement>('[data-key]');
+  const selectFromTarget = (target: EventTarget | null) => {
+    const element = target as HTMLElement | null;
+
+    const keyElement = element?.closest<HTMLElement>('[data-key]');
 
     if (keyElement?.dataset.key) {
       console.log('Selected Board ID:', keyElement.dataset.key);
-      setValue(keyElement.dataset.key);
-      return true
-    } else {
-      setValue(null);
-      return false
+      setValue({
+        id: keyElement.dataset.key,
+        type: 'board',
+        isEditable: false,
+      });
+      return true;
     }
+
+    setValue({
+      id: '',
+      type: '',
+      isEditable: false,
+    });
+    return false;
+  };
+
+  const selectElement = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+
+    return selectFromTarget(e.target);
+  };
+
+  const toggleEdit = () => {
+    setValue((prev) => ({ ...prev, isEditable: !prev.isEditable }));
   };
 
   return {
     value,
     selectElement,
+    selectFromTarget,
+    toggleEdit,
   };
 }
