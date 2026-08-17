@@ -19,11 +19,10 @@ export default function Login() {
 
   return (
     <div className="bg-bg text-text-100 grid min-h-screen grid-cols-1 lg:grid-cols-2">
-      {/* Left Column: Form Section */}
       <div className="flex flex-col justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md lg:mx-0">
           <div className="mb-8">
-            <h1 className="text-text text-3xl font-bold tracking-tight">Welcome back</h1>
+            <h1 className="text-accent/70 text-3xl font-bold tracking-tight">Welcome back</h1>
             <p className="mt-2 text-sm text-gray-400">
               Please enter your credentials to access your account.
             </p>
@@ -69,16 +68,14 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right Column: Hero Image Section */}
       <div className="bg-primary relative hidden w-full overflow-hidden lg:block">
         <Image
-          src="/auth-banner.jpg" // Replace with your image path
+          src="/auth-banner.jpg"
           alt="Authentication Hero"
           fill
           className="object-cover"
           priority
         />
-        {/* Subtle dark gradient overlay */}
         <div className="from-accent/20 absolute inset-0 bg-linear-to-t via-transparent to-transparent" />
       </div>
     </div>

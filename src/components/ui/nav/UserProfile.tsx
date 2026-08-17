@@ -1,5 +1,5 @@
 import { User } from 'lucide-react';
 
 export default function UserProfile() {
-  return <User />;
+  return <User size={36}/>;
 }

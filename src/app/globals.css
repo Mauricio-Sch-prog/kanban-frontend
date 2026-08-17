@@ -1,22 +1,19 @@
 @import 'tailwindcss';
 
 :root {
-  --bg: #ffffff;
+  --bg: #eaeaea;
   --text: #16181d;
   --primary: #f0f0f0;
   --accent: #916cad;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #16181d;
-    --text: #ededed;
-    --primary: #191c25;
-    --accent: #916cad;
-  }
+html.dark {
+  --bg: #14121a;
+  --text: #98989f;
+  --primary: #191c25;
+  --accent: #916cad;
 }
 
-/* Connect CSS variables to Tailwind v4 utilities */
 @theme {
   --color-bg: var(--bg);
   --color-text: var(--text);
