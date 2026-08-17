@@ -1,49 +1,28 @@
 'use client';
 
 import { Input } from '@/components/ui/Input';
-import { apiFetch } from '@/services/api';
+import { useSignup } from '@/hooks/auth/useSignup';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 export default function Signup() {
-  const router = useRouter();
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [authPassword, setAuthPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+
+  const signupMutation = useSignup();
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
 
-    if (password.length < 12) {
-      toast.error('Password must contain at least 12 characters');
-      return;
-    }
-
-    if (password !== authPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-
-    try {
-      await apiFetch('/auth/signup', {
-        method: 'POST',
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      });
-
-      toast.success('Account created successfully!');
-      router.push('/auth/login');
-    } catch (err) {
-      toast.error('Failed to create account');
-    }
+    signupMutation.mutate({
+      name,
+      email,
+      password,
+      repeatPassword,
+    });
   }
 
   return (
@@ -96,8 +75,8 @@ export default function Signup() {
               </label>
               <Input
                 type="password"
-                value={authPassword}
-                onChange={(e) => setAuthPassword(e.target.value)}
+                value={repeatPassword}
+                onChange={(e) => setRepeatPassword(e.target.value)}
                 placeholder="Re-enter your password"
                 required
               />

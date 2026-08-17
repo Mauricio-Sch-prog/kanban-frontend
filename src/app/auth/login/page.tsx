@@ -1,36 +1,20 @@
 'use client';
 
 import { Input } from '@/components/ui/Input';
-import { apiFetch } from '@/services/api';
+import { useLogin } from '@/hooks/auth/useLogin';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 export default function Login() {
-  const router = useRouter();
+  const loginMutation = useLogin();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-
-    try {
-      await apiFetch('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      toast.success('Logged in successfully!');
-      router.push('/home');
-    } catch (err) {
-      toast.error('Login failed. Please check your credentials.');
-    }
+    loginMutation.mutate({ email, password });
   }
 
   return (
@@ -86,7 +70,7 @@ export default function Login() {
       </div>
 
       {/* Right Column: Hero Image Section */}
-      <div className="relative hidden w-full overflow-hidden bg-primary lg:block">
+      <div className="bg-primary relative hidden w-full overflow-hidden lg:block">
         <Image
           src="/auth-banner.jpg" // Replace with your image path
           alt="Authentication Hero"
@@ -95,7 +79,7 @@ export default function Login() {
           priority
         />
         {/* Subtle dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-accent/20 via-transparent to-transparent" />
+        <div className="from-accent/20 absolute inset-0 bg-linear-to-t via-transparent to-transparent" />
       </div>
     </div>
   );
