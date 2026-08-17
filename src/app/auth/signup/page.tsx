@@ -106,7 +106,7 @@ export default function Signup() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-linear-to-t from-accent/20 via-transparent to-transparent" />
+        <div className="from-accent/20 absolute inset-0 bg-linear-to-t via-transparent to-transparent" />
       </div>
     </div>
   );

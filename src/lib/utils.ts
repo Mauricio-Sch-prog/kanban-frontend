@@ -1,5 +1,8 @@
 import { Board } from '@/types/board';
 
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 interface Bounds {
   minX: number;
   minY: number;
@@ -37,4 +40,8 @@ export function getContentBounds(boards: Board[]): Bounds {
     maxX,
     maxY,
   };
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }

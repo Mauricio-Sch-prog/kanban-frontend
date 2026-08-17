@@ -49,7 +49,7 @@ export default function BoardCard({ board, select }: BoardCardProps) {
       data-key={board.id}
       className={`absolute flex flex-col gap-3 rounded-xl border p-4 shadow-2xl backdrop-blur-md ${
         isSelected
-          ? 'border-accent bg-zinc-900/90 ring-2 shadow-blue-500/10 ring-accent/50'
+          ? 'border-accent ring-accent/50 bg-zinc-900/90 ring-2 shadow-blue-500/10'
           : 'border-zinc-800/80 bg-zinc-950/90 hover:border-zinc-700'
       }`}
       style={{

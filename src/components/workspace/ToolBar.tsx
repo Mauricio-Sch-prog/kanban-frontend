@@ -18,7 +18,7 @@ export default function ToolBar(props: DivProps) {
         onClick={() => createBoard.mutate('New Board')}
         aria-label="Add new board"
         title="Add new board"
-        className="group relative flex size-10 items-center justify-center rounded-xl bg-primary/10 text-text transition-all duration-200 ease-in-out hover:scale-105 hover:bg-primary hover:text-accent hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none active:scale-95"
+        className="group bg-primary/10 text-text hover:bg-primary hover:text-accent focus-visible:ring-primary relative flex size-10 items-center justify-center rounded-xl transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none active:scale-95"
       >
         <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
       </Button>

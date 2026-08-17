@@ -7,7 +7,7 @@ type DivProps = React.HTMLAttributes<HTMLDivElement>;
 
 export default function NavBar({ className = '', ...props }: DivProps) {
   return (
-    <div {...props} className={`flex flex-row-reverse items-center ${className}`}>
+    <div {...props} className={`flex flex-row-reverse items-center gap-2 ${className}`}>
       <UserProfile />
       <ThemeToggle />
     </div>
