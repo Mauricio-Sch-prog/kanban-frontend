@@ -1,20 +1,30 @@
 @import 'tailwindcss';
 
 :root {
-  --color-bg: 255 255 255;
-  --color-text: 22 24 29;
-  --color-primary: 240 240 240;
+  --bg: #ffffff;
+  --text: #16181d;
+  --primary: #f0f0f0;
+  --accent: #916cad;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: 22 24 29;
-    --color-text: 237 237 237;
-    --color-primary: 25 28 37;
+    --bg: #16181d;
+    --text: #ededed;
+    --primary: #191c25;
+    --accent: #916cad;
   }
 }
 
+/* Connect CSS variables to Tailwind v4 utilities */
+@theme {
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+}
+
 body {
-  background: rgb(var(--color-bg));
-  color: rgb(var(--color-text));
+  background-color: var(--bg);
+  color: var(--text);
 }

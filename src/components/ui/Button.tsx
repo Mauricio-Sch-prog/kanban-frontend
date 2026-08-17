@@ -4,7 +4,7 @@ export function Button(props: ButtonProps) {
   return (
     <button
       {...props}
-      className={`rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${props.className}`}
+      className={`border-accent hover:bg-accent rounded border px-3 py-2 transition-colors outline-none ${props.className}`}
     />
   );
 }
