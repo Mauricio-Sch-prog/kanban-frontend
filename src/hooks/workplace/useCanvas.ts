@@ -152,7 +152,6 @@ export function useCanvas(boards: Board[]) {
 
         y: worldPoint.y - mouseY / newZoom,
       };
-      console.log('aaaa');
 
       return clampCamera(nextCamera);
     });

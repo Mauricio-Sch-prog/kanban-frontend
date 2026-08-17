@@ -1,3 +1,5 @@
+import { Lane } from './lane';
+
 export type Board = {
   id: string;
   name: string;
@@ -5,4 +7,5 @@ export type Board = {
   positionY: number;
   height: number;
   width: number;
+  lanes: Lane[];
 };

@@ -1,4 +1,4 @@
-import { Board } from "@/types/board";
+import { Board } from '@/types/board';
 
 interface Bounds {
   minX: number;

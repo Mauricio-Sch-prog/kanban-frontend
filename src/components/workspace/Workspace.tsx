@@ -11,9 +11,11 @@ import { useCanvas } from '@/hooks/workplace/useCanvas';
 import { useDisableBrowserZoom } from '@/hooks/workplace/useDisableBrowserZoom';
 import useSelect from '@/hooks/workplace/useSelect';
 import AccessibleContextMenu from './ContextMenu';
+import { useDeleteBoard } from '@/hooks/workplace/board/useDeleteBoard';
 
 export default function Workspace() {
   const updateBoardMutation = useUpdateBoard();
+  const deleteBoardMutation = useDeleteBoard();
 
   const handleDragEnd = async (event: DragEndEvent) => {
     if (event.canceled) return;
@@ -67,12 +69,23 @@ export default function Workspace() {
           const isSelectable = select.selectElement(e);
           if (!isSelectable) canvas.startPan(e);
         }}
+        onContextMenuCapture={(e) => {
+          select.selectFromTarget(e.target);
+        }}
         onPointerMove={canvas.pan}
         onPointerUp={canvas.stopPan}
         onPointerCancel={canvas.stopPan}
         onWheel={canvas.zoomAt}
       >
-        <AccessibleContextMenu>
+        <AccessibleContextMenu
+          select={select}
+          onDelete={(id) => {
+            deleteBoardMutation.mutate(id);
+          }}
+          onEdit={(id) => {
+            select.toggleEdit();
+          }}
+        >
           <World camera={canvas.camera}>
             {boards.map((board: Board) => (
               <BoardCard key={board.id} board={board} select={select.value} />
