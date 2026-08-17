@@ -4,7 +4,7 @@ export function Input(props: InputProps) {
   return (
     <input
       {...props}
-      className={`rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${props.className}`}
+      className={`focus:border-accent focus:ring-accent bg-primary border-accent w-full rounded-lg border px-4 py-3 text-white placeholder-gray-500 focus:ring-1 focus:outline-none ${props.className}`}
     />
   );
 }

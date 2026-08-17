@@ -1,9 +1,12 @@
 'use client';
-import Container from '@/components/ui/Container';
+
 import { Input } from '@/components/ui/Input';
 import { apiFetch } from '@/services/api';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function Signup() {
   const router = useRouter();
@@ -17,63 +20,118 @@ export default function Signup() {
     e.preventDefault();
 
     if (password.length < 12) {
-      return console.log('Password must contain 12 or more characters');
+      toast.error('Password must contain at least 12 characters');
+      return;
     }
 
     if (password !== authPassword) {
-      return console.log('Confirm your password');
+      toast.error('Passwords do not match');
+      return;
     }
 
     try {
       await apiFetch('/auth/signup', {
         method: 'POST',
         body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password,
+          name,
+          email,
+          password,
         }),
       });
 
+      toast.success('Account created successfully!');
       router.push('/auth/login');
     } catch (err) {
-      console.error(err);
-      alert('Login failed');
+      toast.error('Failed to create account');
     }
   }
 
   return (
-    <Container className="flex h-screen items-center justify-center">
-      <form onSubmit={handleSignup} className="bg-gray-900">
-        <Input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Place your name..."
-        />
+    <div className="bg-bg grid min-h-screen grid-cols-1 text-gray-100 lg:grid-cols-2">
+      {/* Left Column: Form Section */}
+      <div className="flex flex-col justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-20 xl:px-24">
+        <div className="mx-auto w-full max-w-md lg:mx-0">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold tracking-tight text-white">Create an account</h1>
+            <p className="mt-2 text-sm text-gray-400">Enter your details below to get started.</p>
+          </div>
 
-        <Input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Place your email..."
-        />
+          <form onSubmit={handleSignup} className="space-y-4">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-300">Full Name</label>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Markus Lumberjack"
+                required
+              />
+            </div>
 
-        <Input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Place your password..."
-        />
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-300">Email Address</label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                required
+              />
+            </div>
 
-        <Input
-          type="password"
-          value={authPassword}
-          onChange={(e) => setAuthPassword(e.target.value)}
-          placeholder="confirm password..."
-        />
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-300">Password</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 12 characters"
+                required
+              />
+            </div>
 
-        <button>Sign Up</button>
-      </form>
-    </Container>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-300">
+                Confirm Password
+              </label>
+              <Input
+                type="password"
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+                placeholder="Re-enter your password"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="bg-accent hover:bg-accent/65 focus:ring-offset-accent focus:ring-accent mt-2 w-full rounded-lg px-4 py-3 font-semibold text-white transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            >
+              Sign Up
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-400 lg:text-left">
+            Already have an account?{' '}
+            <Link href="/auth/login" className="text-accent hover:text-accent/80 font-medium">
+              Log in
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Right Column: Hero Image Section */}
+      <div className="relative hidden w-full overflow-hidden bg-gray-900 lg:block">
+        <Image
+          src="/auth-banner.jpg" // Replace with your image path
+          alt="Authentication Hero"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Subtle dark gradient overlay */}
+        <div className="absolute inset-0 bg-linear-to-t from-gray-950/80 via-transparent to-transparent" />
+      </div>
+    </div>
   );
 }
