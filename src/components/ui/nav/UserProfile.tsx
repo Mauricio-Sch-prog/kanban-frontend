@@ -1,15 +1,16 @@
 'use client';
 
-import { LogOut, Settings, User } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdownMenu';
+} from '@/components/ui/DropdownMenu';
 import { useLogout } from '@/hooks/auth/useLogout';
 import { useAccountInfo } from '@/hooks/auth/useAccountInfo';
+import Image from 'next/image';
 
 export default function UserProfile() {
   const logoutMutation = useLogout();
@@ -26,36 +27,55 @@ export default function UserProfile() {
           <User size={24} />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={8} className="w-48">
-        <DropdownMenuItem>
-          {isLoading ? (
-            <span>Loading...</span>
-          ) : error ? (
-            <span>{error.message || 'Error fetching data...'}</span>
-          ) : (
-            <span
-            className='size-4'
-            >{user?.email}</span>
-          )}
-        </DropdownMenuItem>
 
-        {/* <DropdownMenuItem>
-          <Settings size={16} />
-          Settings
-        </DropdownMenuItem> */}
+      <DropdownMenuContent align="end" sideOffset={8} className="w-64 p-2">
+        {/* User information */}
+        <div className="flex items-center gap-3 px-2 py-2">
+          {/* Avatar */}
+          <div className="bg-muted h-10 w-10 shrink-0 overflow-hidden rounded-full">
+            {user.avatarUrl ? (
+              <Image
+                width={40}
+                height={40}
+                src={user.avatarUrl}
+                alt={user.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <User size={40} className="text-muted-foreground" />
+            )}
+          </div>
+
+          {/* Name + email */}
+          <div className="min-w-0 flex-1">
+            {isLoading ? (
+              <>
+                <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+                <div className="bg-muted mt-1.5 h-3 w-32 animate-pulse rounded" />
+              </>
+            ) : error ? (
+              <p className="text-sm text-red-500">{error.message || 'Error fetching data...'}</p>
+            ) : (
+              <>
+                <p className="truncate text-sm font-medium">{user?.name || 'User'}</p>
+
+                <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
+              </>
+            )}
+          </div>
+        </div>
 
         <DropdownMenuSeparator />
 
-        <button
+        <DropdownMenuItem
+          className="text-accent focus:text-accent cursor-pointer"
           onClick={() => {
             logoutMutation.mutate();
           }}
         >
-          <DropdownMenuItem className="text-red-500 focus:text-red-500">
-            <LogOut size={16} />
-            Log out
-          </DropdownMenuItem>
-        </button>
+          <LogOut size={16} />
+          Log out
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

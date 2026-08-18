@@ -1,5 +1,6 @@
 'use client';
 
+import GoogleButton from '@/components/ui/GoogleButton';
 import { Input } from '@/components/ui/Input';
 import { useSignup } from '@/hooks/auth/useSignup';
 import Image from 'next/image';
@@ -87,6 +88,7 @@ export default function Signup() {
             >
               Sign Up
             </button>
+            <GoogleButton />
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-400 lg:text-left">
