@@ -50,6 +50,14 @@ export default function Login() {
                 placeholder="••••••••••••"
                 required
               />
+              <div className="mt-1.5 text-right">
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-accent hover:text-accent/80 text-xs font-medium transition-colors"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
             </div>
 
             <button
