@@ -8,12 +8,10 @@ export function proxy(request: NextRequest) {
   const isAuthenticated = !!token;
   const isAuthRoute = pathname.startsWith('/auth');
 
-  // Redirect authenticated users away from /auth routes to /home
   if (isAuthenticated && isAuthRoute) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  // Redirect unauthenticated users accessing protected routes to /auth/login
   if (!isAuthenticated && !isAuthRoute) {
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
