@@ -1,11 +1,11 @@
 'use client';
 
 import { Input } from '@/components/ui/Input';
-import { useRecuperationRequest } from '@/hooks/auth/useRecuperationRequest';
+import { useRecuperation } from '@/hooks/auth/useRecuperation';
 import { useState } from 'react';
 
 export default function Login() {
-  const recuperationMutation = useRecuperationRequest();
+  const recuperationMutation = useRecuperation();
 
   const [email, setEmail] = useState('');
 

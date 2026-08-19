@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { apiFetch } from '@/services/api';
 import { toast } from 'sonner';
 
-export function useRecuperationRequest() {
+export function useRecuperation() {
 
   return useMutation({
     mutationFn: async (email: string) => {
