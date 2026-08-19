@@ -41,7 +41,6 @@ export default function AccessibleContextMenu({
           <ContextMenu.Item
             onClick={() => {
               if (contextMenuTarget) {
-                console.log(contextMenuTarget);
                 onEdit?.(contextMenuTarget);
               }
             }}
@@ -54,7 +53,6 @@ export default function AccessibleContextMenu({
           <ContextMenu.Item
             onClick={() => {
               if (contextMenuTarget) {
-                console.log(contextMenuTarget);
                 onDelete?.(contextMenuTarget);
               }
             }}

@@ -24,7 +24,6 @@ export default function useSelect(): UseSelect {
     const keyElement = element?.closest<HTMLElement>('[data-key]');
 
     if (keyElement?.dataset.key) {
-      console.log('Selected Board ID:', keyElement.dataset.key);
       setValue({
         id: keyElement.dataset.key,
         type: 'board',

@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { apiFetch } from '@/services/api';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 interface signupForm {
   name: string;
@@ -12,6 +13,7 @@ interface signupForm {
 
 export function useSignup() {
   const router = useRouter();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   return useMutation({
     mutationFn: async ({ name, email, password, repeatPassword }: signupForm) => {
@@ -23,8 +25,13 @@ export function useSignup() {
         throw new Error('Passwords do not match');
       }
 
+      const token = await executeRecaptcha?.('signup');
+
+      const headers: Record<string, string> = token ? { 'x-recaptcha-token': token } : {};
+
       const response = await apiFetch('/auth/signup', {
         method: 'POST',
+        headers,
         body: JSON.stringify({
           name,
           email,

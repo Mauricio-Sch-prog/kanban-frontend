@@ -4,7 +4,8 @@ import './globals.css';
 import QueryProvider from '@/providers/QueryProvider';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/ThemeProvider';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import RecaptchaProvider from '@/providers/RecaptchaProvider';
+import OAuthProvider from '@/providers/OAuthProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,12 +36,14 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           enableSystem
           disableTransitionOnChange
         >
-          <GoogleOAuthProvider clientId={process.env.PUBLIC_GOOGLE_CLIENT_ID!}>
-            <QueryProvider>
-              {children}
-              <Toaster position="top-right" richColors />
-            </QueryProvider>
-          </GoogleOAuthProvider>
+          <OAuthProvider>
+            <RecaptchaProvider>
+              <QueryProvider>
+                {children}
+                <Toaster position="top-right" richColors />
+              </QueryProvider>
+            </RecaptchaProvider>
+          </OAuthProvider>
         </ThemeProvider>
       </body>
     </html>
