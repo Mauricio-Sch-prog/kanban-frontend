@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 import { Input } from '@/components/ui/Input';
-import { useResetPassword } from '@/hooks/auth/resetPassword';
+import { useResetPassword } from '@/hooks/auth/useResetPassword';
 
 interface ResetPasswordPageProps {
   searchParams: Promise<{
