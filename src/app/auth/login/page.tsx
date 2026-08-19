@@ -1,5 +1,6 @@
 'use client';
 
+import HeroImage from '@/assets/HeroImage';
 import GoogleButton from '@/components/ui/GoogleButton';
 import { Input } from '@/components/ui/Input';
 import { useLogin } from '@/hooks/auth/useLogin';
@@ -19,7 +20,7 @@ export default function Login() {
   }
 
   return (
-    <div className="bg-bg text-text-100 grid min-h-screen grid-cols-1 lg:grid-cols-2">
+    <div className="bg-primary text-text-100 grid min-h-screen grid-cols-1 lg:grid-cols-2">
       <div className="flex flex-col justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md lg:mx-0">
           <div className="mb-8">
@@ -79,15 +80,9 @@ export default function Login() {
         </div>
       </div>
 
-      <div className="bg-primary relative hidden w-full overflow-hidden lg:block">
-        <Image
-          src="/auth-banner.jpg"
-          alt="Authentication Hero"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="from-accent/20 absolute inset-0 bg-linear-to-t via-transparent to-transparent" />
+      <div className="bg-bg relative hidden w-full overflow-hidden lg:block">
+        <HeroImage />
+        <div className="from-accent/5 absolute inset-0 bg-linear-to-b via-transparent to-transparent" />
       </div>
     </div>
   );
