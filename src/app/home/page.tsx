@@ -1,5 +1,3 @@
-'use client';
-
 import NavBar from '@/components/ui/NavBar';
 import ToolBar from '@/components/workspace/ToolBar';
 import Workspace from '@/components/workspace/Workspace';

@@ -12,9 +12,14 @@ import { useLogout } from '@/hooks/auth/useLogout';
 import { useAccountInfo } from '@/hooks/auth/useAccountInfo';
 import Image from 'next/image';
 
-export default function UserProfile() {
+interface User {
+  name: string;
+  email: string;
+  avatarUrl: string;
+}
+
+export default function UserProfile(user: User) {
   const logoutMutation = useLogout();
-  const { data: user = {}, isLoading, error } = useAccountInfo();
 
   return (
     <DropdownMenu>
@@ -29,7 +34,6 @@ export default function UserProfile() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" sideOffset={8} className="w-64 p-2">
-        {/* User information */}
         <div className="flex items-center gap-3 px-2 py-2">
           {/* Avatar */}
           <div className="bg-muted h-10 w-10 shrink-0 overflow-hidden rounded-full">
@@ -48,20 +52,9 @@ export default function UserProfile() {
 
           {/* Name + email */}
           <div className="min-w-0 flex-1">
-            {isLoading ? (
-              <>
-                <div className="bg-muted h-4 w-24 animate-pulse rounded" />
-                <div className="bg-muted mt-1.5 h-3 w-32 animate-pulse rounded" />
-              </>
-            ) : error ? (
-              <p className="text-sm text-red-500">{error.message || 'Error fetching data...'}</p>
-            ) : (
-              <>
-                <p className="truncate text-sm font-medium">{user?.name || 'User'}</p>
+            <p className="truncate text-sm font-medium">{user?.name || 'User'}</p>
 
-                <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
-              </>
-            )}
+            <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
           </div>
         </div>
 
