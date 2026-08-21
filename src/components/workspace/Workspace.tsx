@@ -60,9 +60,6 @@ export default function Workspace() {
         canvas.setIsDragging(false);
         handleDragEnd(event);
       }}
-      onDragCancel={() => {
-        canvas.setIsDragging(false);
-      }}
     >
       <Viewport
         onPointerDown={(e) => {
