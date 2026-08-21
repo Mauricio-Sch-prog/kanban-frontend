@@ -15,7 +15,7 @@ export default function Login() {
   }
 
   return (
-    <div className="bg-bg text-text-100 grid min-h-screen">
+    <div className="bg-primary text-text-100 grid min-h-screen">
       <div className="flex flex-col justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md lg:mx-0">
           <div className="mb-8">

@@ -1,10 +1,12 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/services/api';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
 export function useLogout() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  
 
   return useMutation({
     mutationFn: async () => {
@@ -15,11 +17,13 @@ export function useLogout() {
       if (!response.success) {
         throw new Error(response.message);
       }
-      router.push('/auth/login');
     },
 
     onSuccess: () => {
+      queryClient.clear();
       toast.success('Logged out!');
+      router.push('/auth/login');
+      router.refresh();
     },
 
     onError: (err) => {

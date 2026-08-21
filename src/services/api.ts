@@ -15,6 +15,9 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
       },
     });
 
+    console.log(res);
+    
+
     return res.json();
   } catch (error: unknown) {
     if (error instanceof Error) {

@@ -28,10 +28,10 @@ export default function Signup() {
   }
 
   return (
-    <div className="bg-primary grid min-h-screen grid-cols-1 text-gray-100 lg:grid-cols-2">
-      <div className="flex flex-col justify-center px-8 py-12 sm:px-12 md:px-16 lg:px-20 xl:px-24">
+    <div className="bg-primary grid h-screen h-dvh grid-cols-1 overflow-hidden text-gray-100 lg:grid-cols-2">
+      <div className="flex flex-col justify-center overflow-y-auto px-8 py-6 sm:px-12 md:px-16 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md lg:mx-0">
-          <div className="mb-8">
+          <div className="mb-6">
             <h1 className="text-accent/70 text-3xl font-bold tracking-tight">Create an account</h1>
             <p className="mt-2 text-sm text-gray-400">Enter your details below to get started.</p>
           </div>
@@ -101,7 +101,7 @@ export default function Signup() {
         </div>
       </div>
 
-      <div className="bg-bg relative hidden w-full overflow-hidden lg:block">
+      <div className="bg-bg relative hidden h-full w-full overflow-hidden lg:block">
         <HeroImage />
         <div className="from-accent/5 absolute inset-0 bg-linear-to-b via-transparent to-transparent" />
       </div>

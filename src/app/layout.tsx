@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Kanban by Programador_Gaúcho',
+  title: 'PrettierKanban',
   description: 'The perfect site to organize your task, goals and most creative ideas',
 };
 
@@ -40,7 +40,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
             <RecaptchaProvider>
               <QueryProvider>
                 {children}
-                <Toaster position="top-right" richColors />
+                <Toaster position="top-center" richColors />
               </QueryProvider>
             </RecaptchaProvider>
           </OAuthProvider>

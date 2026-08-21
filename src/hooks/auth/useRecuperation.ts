@@ -26,7 +26,9 @@ export function useRecuperation() {
     },
 
     onSuccess: () => {
-      toast.success('Successfully!');
+      toast.success(
+        'If an account associated with this email exists we sent an recuperation email!'
+      );
     },
 
     onError: (err) => {

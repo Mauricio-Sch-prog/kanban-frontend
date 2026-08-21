@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/services/api';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -12,6 +12,7 @@ interface loginForm {
 export function useLogin() {
   const router = useRouter();
   const { executeRecaptcha } = useGoogleReCaptcha();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ email, password }: loginForm) => {
@@ -31,11 +32,16 @@ export function useLogin() {
       if (!response.success) {
         throw new Error(response.message);
       }
+
+      console.log(response.header);
+      
     },
 
     onSuccess: () => {
+      queryClient.clear();
       toast.success('Logged successfully!');
-      router.push('/auth/login');
+      router.push('/home');
+      router.refresh();
     },
 
     onError: (err) => {
