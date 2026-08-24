@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'PrettierKanban',
+  title: 'PrettierKanban.dev',
   description: 'The perfect site to organize your task, goals and most creative ideas',
 };
 

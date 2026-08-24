@@ -25,7 +25,11 @@ export function useUpdateBoard() {
       queryClient.setQueryData<Board[]>(['boards'], (old = []) =>
         old.map((board) =>
           board.id === updatedBoard.id
-            ? { ...board, ...(updatedBoard.positionX !== undefined && { positionX: updatedBoard.positionX }), ...(updatedBoard.positionY !== undefined && { positionY: updatedBoard.positionY }) }
+            ? {
+                ...board,
+                ...(updatedBoard.positionX !== undefined && { positionX: updatedBoard.positionX }),
+                ...(updatedBoard.positionY !== undefined && { positionY: updatedBoard.positionY }),
+              }
             : board
         )
       );
