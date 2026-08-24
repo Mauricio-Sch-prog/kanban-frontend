@@ -14,9 +14,8 @@ export default function GoogleButton() {
         onError={() => {
           toast.error('Failed to login with Google');
         }}
-        // Force the Google iframe to stretch full-width or maintain consistent width
         width="100%"
-        theme="filled_black" // or "outline" / "filled_blue" depending on your design
+        theme='outline'
         shape="rectangular"
         size="large"
       />

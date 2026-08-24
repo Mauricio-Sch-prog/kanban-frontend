@@ -4,7 +4,6 @@ import HeroImage from '@/assets/HeroImage';
 import GoogleButton from '@/components/ui/GoogleButton';
 import { Input } from '@/components/ui/Input';
 import { useSignup } from '@/hooks/auth/useSignup';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -18,6 +17,7 @@ export default function Signup() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+    console.log("i'm here");
 
     signupMutation.mutate({
       name,
@@ -28,7 +28,7 @@ export default function Signup() {
   }
 
   return (
-    <div className="bg-primary grid h-screen h-dvh grid-cols-1 overflow-hidden text-gray-100 lg:grid-cols-2">
+    <div className="bg-primary grid h-dvh grid-cols-1 overflow-hidden text-gray-100 lg:grid-cols-2">
       <div className="flex flex-col justify-center overflow-y-auto px-8 py-6 sm:px-12 md:px-16 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md lg:mx-0">
           <div className="mb-6">
