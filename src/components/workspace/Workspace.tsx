@@ -3,18 +3,18 @@
 import BoardCard from '@/components/workspace/cards/BoardCard';
 import { DragDropProvider, DragEndEvent } from '@dnd-kit/react';
 import { Board } from '@/types/board';
-import { useBoards } from '@/hooks/workplace/board/useBoard';
-import { useUpdateBoard } from '@/hooks/workplace/board/useUpdateBoard';
+import { useBoards } from '@/hooks/workspace/board/useBoard';
+import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import Viewport from './Viewport';
 import World from './World';
-import { useCanvas } from '@/hooks/workplace/useCanvas';
-import { useDisableBrowserZoom } from '@/hooks/workplace/useDisableBrowserZoom';
-import useSelect from '@/hooks/workplace/useSelect';
+import { useCanvas } from '@/hooks/workspace/useCanvas';
+import { useDisableBrowserZoom } from '@/hooks/workspace/useDisableBrowserZoom';
+import useSelect from '@/hooks/workspace/useSelect';
 import AccessibleContextMenu from './ContextMenu/ContextMenu';
-import { useDeleteBoard } from '@/hooks/workplace/board/useDeleteBoard';
+import { useDeleteBoard } from '@/hooks/workspace/board/useDeleteBoard';
 
 export default function Workspace() {
-  const updateBoardMutation = useUpdateBoard();
+  const updateBoardMutation = useUpdateBoard(true);
   const deleteBoardMutation = useDeleteBoard();
 
   const handleDragEnd = async (event: DragEndEvent) => {

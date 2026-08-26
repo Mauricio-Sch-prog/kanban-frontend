@@ -1,12 +1,12 @@
 'use client';
 
-import { useBoardDetails } from '@/hooks/workplace/board/useBoardDetails';
+import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
-import { select } from '@/types/select';
 import { useDraggable } from '@dnd-kit/react';
 import LaneCard from './LaneCard';
 import { useEffect, useState } from 'react';
-import { UseSelect } from '@/hooks/workplace/useSelect';
+import { UseSelect } from '@/hooks/workspace/useSelect';
+import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 
 interface BoardProps {
   id: string;
@@ -29,9 +29,27 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
 
   const { data: details, isLoading, error } = useBoardDetails(board.id);
 
+  const updateBoardMutation = useUpdateBoard(true);
+
   const isSelected = useSelect.value.id === board.id;
   const [localName, setLocalName] = useState<string | null>(null);
   const name = localName ?? details?.name ?? board.name;
+
+  useEffect(() => {
+    if (localName === null) return;
+
+    const currentName = details?.name ?? board.name;
+    if (localName.trim() === currentName) return;
+
+    const handler = setTimeout(() => {
+      updateBoardMutation.mutate({
+        id: board.id,
+        name: localName.trim(),
+      });
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [localName, board.id, details?.name, board.name, updateBoardMutation]);
 
   if (isLoading) {
     return (
@@ -90,15 +108,11 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
           type="text"
           value={name}
           onChange={(e) => setLocalName(e.target.value)}
-          className="rounded border bg-transparent px-2 py-1 text-sm"
-          
+          className="text-md text-accent rounded border-0 bg-transparent px-2 py-1"
+          disabled={!isSelected}
         />
-        <span className="shrink-0 rounded-full border border-zinc-800 bg-zinc-900 px-2 py-0.5 text-xs font-medium text-zinc-500">
-          {lanes.length} columns
-        </span>
       </div>
 
-      {/* Lanes */}
       <div
         className="mt-3 grid min-h-0 flex-1 gap-3"
         style={{
