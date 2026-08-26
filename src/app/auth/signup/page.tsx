@@ -17,7 +17,6 @@ export default function Signup() {
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
-    console.log("i'm here");
 
     signupMutation.mutate({
       name,

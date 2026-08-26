@@ -2,8 +2,11 @@
 
 import { UseSelect } from '@/hooks/workplace/useSelect';
 import * as ContextMenu from '@radix-ui/react-context-menu';
-import { Edit3, Trash2 } from 'lucide-react';
+import { Edit3, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import ContextMenuItem from './ContextMenuItem';
+import { useCreateLane } from '@/hooks/workplace/lane/useCreateLane';
+import { useCreateBoard } from '@/hooks/workplace/board/useCreateBoard';
 
 interface BoardContextMenuProps {
   children: React.ReactNode;
@@ -19,6 +22,9 @@ export default function AccessibleContextMenu({
   onDelete,
 }: BoardContextMenuProps) {
   const [contextMenuTarget, setContextMenuTarget] = useState('');
+  const createLaneMutation = useCreateLane();
+  const createBoardMutation = useCreateBoard();
+  const elementType = select.value.type;
 
   return (
     <ContextMenu.Root>
@@ -38,6 +44,28 @@ export default function AccessibleContextMenu({
 
       <ContextMenu.Portal>
         <ContextMenu.Content className="border-primary/20 bg-bg animate-in fade-in zoom-in-95 z-50 min-w-44 rounded-xl border p-1.5 shadow-2xl backdrop-blur-md duration-100">
+          {elementType === 'board' ? (
+            <ContextMenuItem
+              onClickCallback={() => {
+                if (contextMenuTarget) {
+                  createLaneMutation.mutate?.({ board: contextMenuTarget, name: 'New Lane' });
+                }
+              }}
+            >
+              <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
+              Create Lane
+            </ContextMenuItem>
+          ) : (
+            <ContextMenuItem
+              onClickCallback={() => {
+                createBoardMutation.mutate('New board');
+              }}
+            >
+              <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
+              Create Board
+            </ContextMenuItem>
+          )}
+
           <ContextMenu.Item
             onClick={() => {
               if (contextMenuTarget) {
@@ -52,6 +80,7 @@ export default function AccessibleContextMenu({
 
           <ContextMenu.Item
             onClick={() => {
+              console.log('here');
               if (contextMenuTarget) {
                 onDelete?.(contextMenuTarget);
               }

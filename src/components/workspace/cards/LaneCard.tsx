@@ -7,10 +7,7 @@ type LaneCardProps = {
   className?: string;
 };
 
-export default function LaneCard({
-  lane,
-  className = '',
-}: LaneCardProps) {
+export default function LaneCard({ lane, className = '' }: LaneCardProps) {
   return (
     <div
       className={`flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-900/50 p-3 shadow-inner ${className}`}
@@ -27,7 +24,7 @@ export default function LaneCard({
       </div>
 
       {/* Tasks */}
-      <div className="min-h-0 min-w-0 flex-1 space-y-2 overflow-y-auto overflow-x-hidden pr-1">
+      <div className="min-h-0 min-w-0 flex-1 space-y-2 overflow-x-hidden overflow-y-auto pr-1">
         {lane.tasks?.map((task: Task) => (
           <TaskCard key={task.id} task={task} />
         ))}

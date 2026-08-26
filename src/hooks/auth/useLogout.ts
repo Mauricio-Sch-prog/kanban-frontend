@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 export function useLogout() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  
 
   return useMutation({
     mutationFn: async () => {

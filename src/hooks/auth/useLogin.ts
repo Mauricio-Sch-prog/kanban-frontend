@@ -32,9 +32,6 @@ export function useLogin() {
       if (!response.success) {
         throw new Error(response.message);
       }
-
-      console.log(response.header);
-      
     },
 
     onSuccess: () => {

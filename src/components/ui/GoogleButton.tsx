@@ -15,7 +15,7 @@ export default function GoogleButton() {
           toast.error('Failed to login with Google');
         }}
         width="100%"
-        theme='outline'
+        theme="outline"
         shape="rectangular"
         size="large"
       />

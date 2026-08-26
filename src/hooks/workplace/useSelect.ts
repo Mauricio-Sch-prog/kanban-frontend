@@ -1,3 +1,4 @@
+import { Board } from '@/types/board';
 import React, { useState } from 'react';
 
 export type UseSelect = {
@@ -11,7 +12,7 @@ export type UseSelect = {
   toggleEdit: () => void;
 };
 
-export default function useSelect(): UseSelect {
+export default function useSelect(boards: Board[]): UseSelect {
   const [value, setValue] = useState({
     id: '',
     type: '',
@@ -21,12 +22,18 @@ export default function useSelect(): UseSelect {
   const selectFromTarget = (target: EventTarget | null) => {
     const element = target as HTMLElement | null;
 
+    // Stop execution if the click originated from inside ContextMenu.Content
+    if (element?.closest('[data-radix-popper-content-wrapper], [role="menu"]')) {
+      return false;
+    }
+
     const keyElement = element?.closest<HTMLElement>('[data-key]');
+    const result = boards.find((board: Board) => board.id === keyElement?.dataset.key);
 
     if (keyElement?.dataset.key) {
       setValue({
         id: keyElement.dataset.key,
-        type: 'board',
+        type: keyElement.dataset.type || '',
         isEditable: false,
       });
       return true;

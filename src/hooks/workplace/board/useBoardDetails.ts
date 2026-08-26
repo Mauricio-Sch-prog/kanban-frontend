@@ -3,7 +3,7 @@ import { apiFetch } from '@/services/api';
 
 export function useBoardDetails(boardId: string) {
   return useQuery({
-    queryKey: ['boardDetails', boardId],
+    queryKey: [`boardDetails:${boardId}`, boardId],
 
     queryFn: async () => {
       const response = await apiFetch(`/board/${boardId}/details`, {

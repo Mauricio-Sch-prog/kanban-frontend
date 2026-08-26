@@ -10,7 +10,7 @@ import World from './World';
 import { useCanvas } from '@/hooks/workplace/useCanvas';
 import { useDisableBrowserZoom } from '@/hooks/workplace/useDisableBrowserZoom';
 import useSelect from '@/hooks/workplace/useSelect';
-import AccessibleContextMenu from './ContextMenu';
+import AccessibleContextMenu from './ContextMenu/ContextMenu';
 import { useDeleteBoard } from '@/hooks/workplace/board/useDeleteBoard';
 
 export default function Workspace() {
@@ -39,7 +39,7 @@ export default function Workspace() {
   const { data: boards = [], isLoading, error } = useBoards();
 
   const canvas = useCanvas(boards);
-  const select = useSelect();
+  const select = useSelect(boards);
 
   useDisableBrowserZoom();
 
@@ -85,7 +85,7 @@ export default function Workspace() {
         >
           <World camera={canvas.camera}>
             {boards.map((board: Board) => (
-              <BoardCard key={board.id} board={board} select={select.value} />
+              <BoardCard key={board.id} board={board} useSelect={select} />
             ))}
           </World>
         </AccessibleContextMenu>
