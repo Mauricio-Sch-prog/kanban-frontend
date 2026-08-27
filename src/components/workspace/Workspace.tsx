@@ -79,9 +79,6 @@ export default function Workspace() {
           onDelete={(id) => {
             deleteBoardMutation.mutate(id);
           }}
-          onEdit={(id) => {
-            select.toggleEdit();
-          }}
         >
           <World camera={canvas.camera}>
             {boards.map((board: Board) => (
