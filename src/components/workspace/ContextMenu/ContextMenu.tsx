@@ -1,12 +1,13 @@
 'use client';
 
-import { UseSelect } from '@/hooks/workplace/useSelect';
+import { UseSelect } from '@/hooks/workspace/useSelect';
 import * as ContextMenu from '@radix-ui/react-context-menu';
-import { Edit3, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ContextMenuItem from './ContextMenuItem';
-import { useCreateLane } from '@/hooks/workplace/lane/useCreateLane';
-import { useCreateBoard } from '@/hooks/workplace/board/useCreateBoard';
+import { useCreateLane } from '@/hooks/workspace/lane/useCreateLane';
+import { useCreateBoard } from '@/hooks/workspace/board/useCreateBoard';
+import { useCreateTask } from '@/hooks/workspace/task/useCreateTask';
 
 interface BoardContextMenuProps {
   children: React.ReactNode;
@@ -18,12 +19,12 @@ interface BoardContextMenuProps {
 export default function AccessibleContextMenu({
   children,
   select,
-  onEdit,
   onDelete,
 }: BoardContextMenuProps) {
   const [contextMenuTarget, setContextMenuTarget] = useState('');
-  const createLaneMutation = useCreateLane();
   const createBoardMutation = useCreateBoard();
+  const createLaneMutation = useCreateLane();
+  const createTaskMutation = useCreateTask();
   const elementType = select.value.type;
 
   return (
@@ -55,6 +56,21 @@ export default function AccessibleContextMenu({
               <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
               Create Lane
             </ContextMenuItem>
+          ) : elementType === 'lane' ? (
+            <ContextMenuItem
+              onClickCallback={() => {
+                if (contextMenuTarget) {
+                  createTaskMutation.mutate?.({
+                    board: select.value.board,
+                    lane: contextMenuTarget,
+                    title: 'New Task',
+                  });
+                }
+              }}
+            >
+              <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
+              Create Task
+            </ContextMenuItem>
           ) : (
             <ContextMenuItem
               onClickCallback={() => {
@@ -65,18 +81,6 @@ export default function AccessibleContextMenu({
               Create Board
             </ContextMenuItem>
           )}
-
-          <ContextMenu.Item
-            onClick={() => {
-              if (contextMenuTarget) {
-                onEdit?.(contextMenuTarget);
-              }
-            }}
-            className="text-text hover:bg-primary/20 focus:bg-primary/20 flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm outline-none"
-          >
-            <Edit3 className="size-4" />
-            Edit
-          </ContextMenu.Item>
 
           <ContextMenu.Item
             onClick={() => {

@@ -2,7 +2,7 @@
 
 import { Plus } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { useCreateBoard } from '@/hooks/workplace/board/useCreateBoard';
+import { useCreateBoard } from '@/hooks/workspace/board/useCreateBoard';
 
 type DivProps = React.HTMLAttributes<HTMLDivElement>;
 

@@ -39,7 +39,7 @@ export default function Workspace() {
   const { data: boards = [], isLoading, error } = useBoards();
 
   const canvas = useCanvas(boards);
-  const select = useSelect(boards);
+  const select = useSelect();
 
   useDisableBrowserZoom();
 

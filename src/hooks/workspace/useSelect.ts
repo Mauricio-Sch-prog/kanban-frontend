@@ -1,40 +1,39 @@
-import { Board } from '@/types/board';
 import React, { useState } from 'react';
 
 export type UseSelect = {
   value: {
     id: string;
     type: string;
-    isEditable: boolean;
+    board: string;
   };
   selectElement: (e: React.PointerEvent<HTMLDivElement>) => boolean;
   selectFromTarget: (target: EventTarget | null) => boolean;
-  toggleEdit: () => void;
 };
 
-export default function useSelect(boards: Board[]): UseSelect {
+export default function useSelect(): UseSelect {
   const [value, setValue] = useState({
     id: '',
     type: '',
-    isEditable: false,
+    board: '',
   });
 
   const selectFromTarget = (target: EventTarget | null) => {
     const element = target as HTMLElement | null;
 
-    // Stop execution if the click originated from inside ContextMenu.Content
     if (element?.closest('[data-radix-popper-content-wrapper], [role="menu"]')) {
       return false;
     }
 
     const keyElement = element?.closest<HTMLElement>('[data-key]');
-    const result = boards.find((board: Board) => board.id === keyElement?.dataset.key);
+    const board = element?.closest<HTMLElement>('[data-type="board"]');
+
+    console.log(keyElement?.dataset.type);
 
     if (keyElement?.dataset.key) {
       setValue({
         id: keyElement.dataset.key,
         type: keyElement.dataset.type || '',
-        isEditable: false,
+        board: board?.dataset.key || '',
       });
       return true;
     }
@@ -42,7 +41,7 @@ export default function useSelect(boards: Board[]): UseSelect {
     setValue({
       id: '',
       type: '',
-      isEditable: false,
+      board: '',
     });
     return false;
   };
@@ -53,14 +52,9 @@ export default function useSelect(boards: Board[]): UseSelect {
     return selectFromTarget(e.target);
   };
 
-  const toggleEdit = () => {
-    setValue((prev) => ({ ...prev, isEditable: !prev.isEditable }));
-  };
-
   return {
     value,
     selectElement,
     selectFromTarget,
-    toggleEdit,
   };
 }
