@@ -58,7 +58,13 @@ export default function Workspace() {
       }}
       onDragEnd={(event) => {
         canvas.setIsDragging(false);
-        handleDragEnd(event);
+
+        const { source, target } = event.operation;
+
+        console.log(source?.data);
+        console.log(target);
+
+        if (source?.type === 'board') handleDragEnd(event);
       }}
     >
       <Viewport

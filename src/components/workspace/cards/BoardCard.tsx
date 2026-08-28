@@ -2,12 +2,11 @@
 
 import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
-import { useDraggable } from '@dnd-kit/react';
 import LaneCard from './LaneCard';
 import { useEffect, useState } from 'react';
 import { UseSelect } from '@/hooks/workspace/useSelect';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
-
+import { useDraggable, useDroppable } from '@dnd-kit/react';
 interface BoardProps {
   id: string;
   name: string;
@@ -25,6 +24,13 @@ interface BoardCardProps {
 export default function BoardCard({ board, useSelect }: BoardCardProps) {
   const { ref } = useDraggable({
     id: board.id,
+    type: 'board',
+  });
+
+  const { ref: droppableRef } = useDroppable({
+    id: `board-drop:${board.id}`,
+    type: 'lane',
+    accept: 'lane',
   });
 
   const { data: details, isLoading, error } = useBoardDetails(board.id);
@@ -85,6 +91,7 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
     );
   }
   const lanes = details?.lanes ?? [];
+  const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
 
   return (
     <div
@@ -118,9 +125,10 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
         style={{
           gridTemplateColumns: `repeat(${Math.max(lanes.length, 1)}, minmax(0, 1fr))`,
         }}
+        ref={droppableRef}
       >
-        {lanes.map((lane: Lane) => (
-          <LaneCard key={lane.id} lane={lane} />
+        {sortedLanes.map((lane: Lane) => (
+          <LaneCard key={lane.id} lane={lane} board={board.id} />
         ))}
       </div>
     </div>
