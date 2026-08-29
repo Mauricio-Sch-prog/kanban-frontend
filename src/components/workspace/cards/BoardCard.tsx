@@ -31,6 +31,9 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
     id: `board-drop:${board.id}`,
     type: 'lane',
     accept: 'lane',
+    data: {
+      board: board.id,
+    },
   });
 
   const { data: details, isLoading, error } = useBoardDetails(board.id);
@@ -92,6 +95,8 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
   }
   const lanes = details?.lanes ?? [];
   const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
+
+
 
   return (
     <div

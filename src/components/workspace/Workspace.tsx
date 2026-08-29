@@ -12,10 +12,13 @@ import { useDisableBrowserZoom } from '@/hooks/workspace/useDisableBrowserZoom';
 import useSelect from '@/hooks/workspace/useSelect';
 import AccessibleContextMenu from './ContextMenu/ContextMenu';
 import { useDeleteBoard } from '@/hooks/workspace/board/useDeleteBoard';
+import { isSortable } from '@dnd-kit/dom/sortable';
+import { useMoveLane } from '@/hooks/workspace/lane/useMoveLane';
 
 export default function Workspace() {
   const updateBoardMutation = useUpdateBoard(true);
   const deleteBoardMutation = useDeleteBoard();
+  const moveLaneMutation = useMoveLane();
 
   const handleDragEnd = async (event: DragEndEvent) => {
     if (event.canceled) return;
@@ -56,13 +59,45 @@ export default function Workspace() {
       onDragStart={() => {
         canvas.setIsDragging(true);
       }}
+
+      onDragOver={(event) => {
+        const { source, target } = event.operation;
+
+        if (!isSortable(source)) return;
+        if (source.type !== 'lane') return;
+
+        const sourceBoard = source.data.board;
+        const targetBoard = target?.data.board;
+
+        if (!targetBoard) return;
+
+        if (sourceBoard !== targetBoard) {
+          event.preventDefault();
+        }
+      }}
+
       onDragEnd={(event) => {
         canvas.setIsDragging(false);
 
         const { source, target } = event.operation;
 
-        console.log(source?.data);
-        console.log(target);
+        if (isSortable(source)) {
+          const { initialIndex, index: newIndex } = source.sortable;
+
+          console.log(`moving from ${initialIndex} to ${newIndex}`);
+
+          if (source.type === 'lane') {
+            moveLaneMutation.mutate({
+              laneId: source.data.lane,
+              previousBoard: source.data.board,
+              targetBoard: target?.data.board,
+              targetIndex: newIndex,
+            });
+          }
+          if (source.type === 'task') {
+            const directTargetId = target?.data.lane;
+          }
+        }
 
         if (source?.type === 'board') handleDragEnd(event);
       }}
