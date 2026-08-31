@@ -4,20 +4,22 @@ import { useSortable } from '@dnd-kit/react/sortable';
 type TaskCardProps = {
   task: Task;
   lane: string;
+  board: string;
   className?: string;
 };
 
-export default function TaskCard({ task, lane, className = '' }: TaskCardProps) {
+export default function TaskCard({ task, lane, board, className = '' }: TaskCardProps) {
   const { ref: sortableRef } = useSortable({
     id: task.id,
     index: task.index,
-    type: 'task',
     group: `lane:${lane}`,
+    type: 'task',
     accept: 'task',
     data: {
       task: task.id,
       lane: lane,
-    }
+      board: board,
+    },
   });
 
   return (

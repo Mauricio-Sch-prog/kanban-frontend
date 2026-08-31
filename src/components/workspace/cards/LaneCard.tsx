@@ -28,6 +28,9 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
     id: `lane-drop:${lane.id}`,
     type: 'task',
     accept: 'task',
+    data: {
+      lane: lane.id,
+    },
   });
 
   const sortedTasks = [...lane.tasks].sort((a, b) => a.index - b.index);
@@ -50,7 +53,7 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
         className="min-h-0 min-w-0 flex-1 space-y-2 overflow-x-hidden overflow-y-auto pr-1"
       >
         {sortedTasks.map((task: Task) => (
-          <TaskCard key={task.id} task={task} lane={lane.id} />
+          <TaskCard key={task.id} task={task} lane={lane.id} board={board} />
         ))}
       </div>
     </div>

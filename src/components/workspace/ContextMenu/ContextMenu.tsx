@@ -84,7 +84,6 @@ export default function AccessibleContextMenu({
 
           <ContextMenu.Item
             onClick={() => {
-              console.log('here');
               if (contextMenuTarget) {
                 onDelete?.(contextMenuTarget);
               }

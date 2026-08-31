@@ -14,11 +14,13 @@ import AccessibleContextMenu from './ContextMenu/ContextMenu';
 import { useDeleteBoard } from '@/hooks/workspace/board/useDeleteBoard';
 import { isSortable } from '@dnd-kit/dom/sortable';
 import { useMoveLane } from '@/hooks/workspace/lane/useMoveLane';
+import { useMoveTask } from '@/hooks/workspace/task/useMoveTask';
 
 export default function Workspace() {
   const updateBoardMutation = useUpdateBoard(true);
   const deleteBoardMutation = useDeleteBoard();
   const moveLaneMutation = useMoveLane();
+  const moveTaskMutation = useMoveTask();
 
   const handleDragEnd = async (event: DragEndEvent) => {
     if (event.canceled) return;
@@ -64,16 +66,28 @@ export default function Workspace() {
         const { source, target } = event.operation;
 
         if (!isSortable(source)) return;
-        if (source.type !== 'lane') return;
+        // if (source.type !== 'lane' && source.type !== 'task') return;
 
-        const sourceBoard = source.data.board;
-        const targetBoard = target?.data.board;
+        if (source.type == 'lane') {
+          const sourceBoard = source.data.board;
+          const targetBoard = target?.data.board;
 
-        if (!targetBoard) return;
+          if (!targetBoard) return;
 
-        if (sourceBoard !== targetBoard) {
-          event.preventDefault();
+          if (sourceBoard !== targetBoard) {
+            event.preventDefault();
+          }
+        } else if (source.type == 'task') {
+          const sourceLane = source.data.lane;
+          const targetLane = target?.data.lane;
+
+          if (!targetLane) return;
+
+          if (sourceLane !== targetLane) {
+            event.preventDefault();
+          }
         }
+        return;
       }}
 
       onDragEnd={(event) => {
@@ -82,9 +96,7 @@ export default function Workspace() {
         const { source, target } = event.operation;
 
         if (isSortable(source)) {
-          const { initialIndex, index: newIndex } = source.sortable;
-
-          console.log(`moving from ${initialIndex} to ${newIndex}`);
+          const { index: newIndex } = source.sortable;
 
           if (source.type === 'lane') {
             moveLaneMutation.mutate({
@@ -94,8 +106,15 @@ export default function Workspace() {
               targetIndex: newIndex,
             });
           }
+
           if (source.type === 'task') {
-            const directTargetId = target?.data.lane;
+            moveTaskMutation.mutate({
+              taskId: source.data.task,
+              previousBoard: source.data.board,
+              targetBoard: target?.data.board,
+              targetLane: target?.data.lane,
+              targetIndex: newIndex,
+            });
           }
         }
 
