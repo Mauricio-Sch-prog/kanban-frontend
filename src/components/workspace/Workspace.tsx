@@ -15,10 +15,16 @@ import { useDeleteBoard } from '@/hooks/workspace/board/useDeleteBoard';
 import { isSortable } from '@dnd-kit/dom/sortable';
 import { useMoveLane } from '@/hooks/workspace/lane/useMoveLane';
 import { useMoveTask } from '@/hooks/workspace/task/useMoveTask';
+import { useDeleteLane } from '@/hooks/workspace/lane/useDeleteLane';
+import { useDeleteTask } from '@/hooks/workspace/task/useDeleteTask';
 
 export default function Workspace() {
   const updateBoardMutation = useUpdateBoard(true);
+
   const deleteBoardMutation = useDeleteBoard();
+  const deleteLaneMutation = useDeleteLane();
+  const deleteTaskMutation = useDeleteTask();
+
   const moveLaneMutation = useMoveLane();
   const moveTaskMutation = useMoveTask();
 
@@ -39,6 +45,24 @@ export default function Workspace() {
       positionX: newPositionX,
       positionY: newPositionY,
     });
+  };
+
+  const handleDelete = async () => {
+    if (select.value.type === 'board') {
+      deleteBoardMutation.mutate(select.value.id);
+    }
+    if (select.value.type === 'lane') {
+      deleteLaneMutation.mutate({
+        id: select.value.id,
+        board: select.value.board,
+      });
+    }
+    if (select.value.type === 'task') {
+      deleteTaskMutation.mutate({
+        id: select.value.id,
+        board: select.value.board,
+      });
+    }
   };
 
   const { data: boards = [], isLoading, error } = useBoards();
@@ -134,12 +158,7 @@ export default function Workspace() {
         onPointerCancel={canvas.stopPan}
         onWheel={canvas.zoomAt}
       >
-        <AccessibleContextMenu
-          select={select}
-          onDelete={(id) => {
-            deleteBoardMutation.mutate(id);
-          }}
-        >
+        <AccessibleContextMenu select={select} onDelete={handleDelete}>
           <World camera={canvas.camera}>
             {boards.map((board: Board) => (
               <BoardCard key={board.id} board={board} useSelect={select} />

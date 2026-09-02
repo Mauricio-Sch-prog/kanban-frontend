@@ -25,6 +25,8 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
   return (
     <div
       ref={sortableRef}
+      data-key={task.id}
+      data-type="task"
       className={`w-full min-w-0 overflow-hidden rounded-md border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-200 shadow-sm transition-all hover:border-zinc-700 hover:bg-zinc-900/80 hover:shadow-md ${className}`}
     >
       <div className="min-w-0 font-medium wrap-break-word">{task.title}</div>

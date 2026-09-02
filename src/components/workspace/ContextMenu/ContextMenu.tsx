@@ -13,7 +13,7 @@ interface BoardContextMenuProps {
   children: React.ReactNode;
   select: UseSelect;
   onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
+  onDelete?: () => void;
 }
 
 export default function AccessibleContextMenu({
@@ -71,7 +71,7 @@ export default function AccessibleContextMenu({
               <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
               Create Task
             </ContextMenuItem>
-          ) : (
+          ) : elementType !== 'task' ? (
             <ContextMenuItem
               onClickCallback={() => {
                 createBoardMutation.mutate('New board');
@@ -80,19 +80,23 @@ export default function AccessibleContextMenu({
               <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
               Create Board
             </ContextMenuItem>
+          ) : (
+            <></>
           )}
 
-          <ContextMenu.Item
-            onClick={() => {
-              if (contextMenuTarget) {
-                onDelete?.(contextMenuTarget);
-              }
-            }}
-            className="flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-red-500 outline-none hover:bg-red-500/10 focus:bg-red-500/10"
-          >
-            <Trash2 className="size-4" />
-            Delete
-          </ContextMenu.Item>
+          {select.value.id ? (
+            <ContextMenu.Item
+              onClick={() => {
+                if (contextMenuTarget) {
+                  onDelete?.();
+                }
+              }}
+              className="flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-red-500 outline-none hover:bg-red-500/10 focus:bg-red-500/10"
+            >
+              <Trash2 className="size-4" />
+              Delete
+            </ContextMenu.Item>
+          ) : null}
         </ContextMenu.Content>
       </ContextMenu.Portal>
     </ContextMenu.Root>

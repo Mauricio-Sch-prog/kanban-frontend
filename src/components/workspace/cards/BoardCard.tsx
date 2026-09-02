@@ -40,7 +40,7 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
 
   const updateBoardMutation = useUpdateBoard(true);
 
-  const isSelected = useSelect.value.id === board.id;
+  const isSelected = useSelect.value.board === board.id;
   const [localName, setLocalName] = useState<string | null>(null);
   const name = localName ?? details?.name ?? board.name;
 
