@@ -3,7 +3,7 @@
 import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
 import LaneCard from './LaneCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { UseSelect } from '@/hooks/workspace/useSelect';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
@@ -42,7 +42,18 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
 
   const isSelected = useSelect.value.board === board.id;
   const [localName, setLocalName] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const name = localName ?? details?.name ?? board.name;
+  const canEdit = isSelected && isEditing;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleNameMouseDown = () => {
+    if (!isSelected || isEditing) return;
+    setIsEditing(true);
+    requestAnimationFrame(() => {
+      inputRef.current?.select();
+    });
+  };
 
   useEffect(() => {
     if (localName === null) return;
@@ -96,8 +107,6 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
   const lanes = details?.lanes ?? [];
   const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
 
-
-
   return (
     <div
       ref={ref}
@@ -118,10 +127,14 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
       <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
         <input
           type="text"
+          ref={inputRef}
           value={name}
           onChange={(e) => setLocalName(e.target.value)}
-          className="text-md text-accent rounded border-0 bg-transparent px-2 py-1"
-          disabled={!isSelected}
+          onMouseDown={handleNameMouseDown}
+          readOnly={!canEdit}
+          className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
+            isSelected && !isEditing ? 'cursor-text' : ''
+          }`}
         />
       </div>
 

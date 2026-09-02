@@ -11,7 +11,7 @@ export function useCreateTask() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({board, lane, title }: createProps) => {
+    mutationFn: async ({ board, lane, title }: createProps) => {
       const response = await apiFetch('/task', {
         method: 'POST',
         body: JSON.stringify({
