@@ -4,6 +4,10 @@ import { Task } from '@/types/task';
 
 import { useSortable } from '@dnd-kit/react/sortable';
 import { useDroppable } from '@dnd-kit/react';
+import { useUpdateLane } from '@/hooks/workspace/lane/useUpdateLane';
+import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
+import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
+import { useRef } from 'react';
 
 type LaneCardProps = {
   lane: Lane;
@@ -33,6 +37,20 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
     },
   });
 
+  const updateLaneMutation = useUpdateLane(board);
+  const updateTime = useNameEditTimer({
+    targetData: {
+      id: lane.id,
+      name: lane.name,
+    },
+    mutation: updateLaneMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
+  });
+  const inputRef = useRef<HTMLInputElement>(null);
+  const editableBehavior = useEditableBehavior(inputRef);
+
+  const name = updateTime.localName ?? lane.name;
+  const canEdit = editableBehavior.isEditing;
+
   const sortedTasks = [...lane.tasks].sort((a, b) => a.index - b.index);
 
   return (
@@ -43,9 +61,20 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
       className={`flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-900/50 p-3 shadow-inner ${className}`}
     >
       <div className="mb-3 flex min-w-0 shrink-0 items-center justify-between gap-2 px-1">
-        <span className="min-w-0 truncate text-xs font-bold tracking-wider text-zinc-400 uppercase">
+        {/* <span className="min-w-0 truncate text-xs font-bold tracking-wider text-zinc-400 uppercase">
           {lane.name}
-        </span>
+        </span> */}
+        <input
+          type="text"
+          ref={inputRef}
+          value={name}
+          onChange={(e) => updateTime.setLocalName(e.target.value)}
+          onMouseDown={editableBehavior.mouseDown}
+          readOnly={!canEdit}
+          className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
+            !canEdit ? 'cursor-text' : ''
+          }`}
+        />
       </div>
 
       <div

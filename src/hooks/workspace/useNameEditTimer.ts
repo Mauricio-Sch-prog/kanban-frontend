@@ -31,6 +31,5 @@ export const useNameEditTimer = ({ targetData, mutation }: nameEditTimerProps) =
   return {
     setLocalName,
     localName,
-  }
-
+  };
 };

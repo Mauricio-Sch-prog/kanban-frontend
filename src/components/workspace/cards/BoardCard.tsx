@@ -50,11 +50,10 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
     mutation: updateBoardMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
   });
   const inputRef = useRef<HTMLInputElement>(null);
-  const editableBehavior = useEditableBehavior(isSelected, inputRef);
+  const editableBehavior = useEditableBehavior(inputRef);
 
   const name = updateTime.localName ?? details?.name ?? board.name;
   const canEdit = isSelected && editableBehavior.isEditing;
-  
 
   if (isLoading) {
     return (

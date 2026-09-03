@@ -1,13 +1,9 @@
-import { RefObject, useRef, useState } from 'react';
+import { RefObject, useState } from 'react';
 
-interface editableBehaviorProps {
-  isSelected: boolean;
-}
-
-export const useEditableBehavior = (isSelected: boolean, ref: RefObject<HTMLInputElement | null>) => {
+export const useEditableBehavior = (ref: RefObject<HTMLInputElement | null>) => {
   const [isEditing, setIsEditing] = useState(false);
   const mouseDown = () => {
-    if (!isSelected || isEditing) return;
+    if (isEditing) return;
     setIsEditing(true);
     requestAnimationFrame(() => {
       ref.current?.select();
@@ -17,6 +13,5 @@ export const useEditableBehavior = (isSelected: boolean, ref: RefObject<HTMLInpu
   return {
     mouseDown,
     isEditing,
-    ref,
   };
 };
