@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from 'react';
 import { UseSelect } from '@/hooks/workspace/useSelect';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
+import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
+import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 interface BoardProps {
   id: string;
   name: string;
@@ -37,39 +39,22 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
   });
 
   const { data: details, isLoading, error } = useBoardDetails(board.id);
+  const isSelected = useSelect.value.board === board.id;
 
   const updateBoardMutation = useUpdateBoard(true);
-
-  const isSelected = useSelect.value.board === board.id;
-  const [localName, setLocalName] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const name = localName ?? details?.name ?? board.name;
-  const canEdit = isSelected && isEditing;
+  const updateTime = useNameEditTimer({
+    targetData: {
+      id: board.id,
+      name: board.name,
+    },
+    mutation: updateBoardMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
+  });
   const inputRef = useRef<HTMLInputElement>(null);
+  const editableBehavior = useEditableBehavior(isSelected, inputRef);
 
-  const handleNameMouseDown = () => {
-    if (!isSelected || isEditing) return;
-    setIsEditing(true);
-    requestAnimationFrame(() => {
-      inputRef.current?.select();
-    });
-  };
-
-  useEffect(() => {
-    if (localName === null) return;
-
-    const currentName = details?.name ?? board.name;
-    if (localName.trim() === currentName) return;
-
-    const handler = setTimeout(() => {
-      updateBoardMutation.mutate({
-        id: board.id,
-        name: localName.trim(),
-      });
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [localName, board.id, details?.name, board.name, updateBoardMutation]);
+  const name = updateTime.localName ?? details?.name ?? board.name;
+  const canEdit = isSelected && editableBehavior.isEditing;
+  
 
   if (isLoading) {
     return (
@@ -129,11 +114,11 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
           type="text"
           ref={inputRef}
           value={name}
-          onChange={(e) => setLocalName(e.target.value)}
-          onMouseDown={handleNameMouseDown}
+          onChange={(e) => updateTime.setLocalName(e.target.value)}
+          onMouseDown={editableBehavior.mouseDown}
           readOnly={!canEdit}
           className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
-            isSelected && !isEditing ? 'cursor-text' : ''
+            isSelected && !canEdit ? 'cursor-text' : ''
           }`}
         />
       </div>
