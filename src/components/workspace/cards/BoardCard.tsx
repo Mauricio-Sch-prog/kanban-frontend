@@ -3,7 +3,7 @@
 import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
 import LaneCard from './LaneCard';
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { UseSelect } from '@/hooks/workspace/useSelect';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
@@ -42,13 +42,13 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
   const isSelected = useSelect.value.board === board.id;
 
   const updateBoardMutation = useUpdateBoard(true);
+
   const updateTime = useNameEditTimer({
-    targetData: {
-      id: board.id,
-      name: board.name,
-    },
+    id: board.id,
+    initialValue: board.name,
     mutation: updateBoardMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
   });
+
   const inputRef = useRef<HTMLInputElement>(null);
   const editableBehavior = useEditableBehavior(inputRef);
 

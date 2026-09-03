@@ -1,32 +1,36 @@
 import { UseMutationResult } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-interface nameEditTimerProps {
-  targetData: {
-    id: string;
-    name: string;
-  };
+interface UseNameEditTimerProps {
+  id: string;
+  initialValue: string;
+  fieldKey?: 'name' | 'title';
   mutation: UseMutationResult;
 }
 
-export const useNameEditTimer = ({ targetData, mutation }: nameEditTimerProps) => {
+export const useNameEditTimer = ({
+  id,
+  initialValue,
+  fieldKey = 'name',
+  mutation,
+}: UseNameEditTimerProps) => {
   const [localName, setLocalName] = useState<string | null>(null);
 
   useEffect(() => {
     if (localName === null) return;
 
-    const currentName = targetData.name;
-    if (localName.trim() === currentName) return;
+    const trimmedName = localName.trim();
+    if (trimmedName === initialValue) return;
 
     const handler = setTimeout(() => {
       mutation.mutate({
-        id: targetData.id,
-        name: localName.trim(),
+        id,
+        [fieldKey]: trimmedName,
       });
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [localName, targetData.id, targetData.name, mutation]);
+  }, [localName, id, initialValue, fieldKey, mutation]);
 
   return {
     setLocalName,

@@ -39,10 +39,8 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
 
   const updateLaneMutation = useUpdateLane(board);
   const updateTime = useNameEditTimer({
-    targetData: {
-      id: lane.id,
-      name: lane.name,
-    },
+    id: lane.id,
+    initialValue: lane.name,
     mutation: updateLaneMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
   });
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,9 +59,6 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
       className={`flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-900/50 p-3 shadow-inner ${className}`}
     >
       <div className="mb-3 flex min-w-0 shrink-0 items-center justify-between gap-2 px-1">
-        {/* <span className="min-w-0 truncate text-xs font-bold tracking-wider text-zinc-400 uppercase">
-          {lane.name}
-        </span> */}
         <input
           type="text"
           ref={inputRef}
