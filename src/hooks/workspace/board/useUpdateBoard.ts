@@ -13,7 +13,7 @@ export function useUpdateBoard(isDetailsOnly: boolean = false) {
       });
 
       if (!response.success) {
-        throw new Error('Failed to update board position');
+        throw new Error('Failed to update board');
       }
       return response.data;
     },
