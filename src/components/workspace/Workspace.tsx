@@ -20,6 +20,7 @@ import { useDeleteTask } from '@/hooks/workspace/task/useDeleteTask';
 
 export default function Workspace() {
   const updateBoardMutation = useUpdateBoard(true);
+  const moveBoardMutation = useUpdateBoard(false);
 
   const deleteBoardMutation = useDeleteBoard();
   const deleteLaneMutation = useDeleteLane();
@@ -32,7 +33,7 @@ export default function Workspace() {
     if (event.canceled) return;
     const { source, transform } = event.operation;
     const { x, y } = transform;
-    const board = boards.find((board: Board) => board.id === source?.id);
+    const board = sortedBoards.find((board: Board) => board.id === source?.id);
 
     if (!board) {
       console.error('Board not found:', source?.id);
@@ -40,7 +41,7 @@ export default function Workspace() {
     }
     const newPositionX = board.positionX + x / canvas.camera.zoom;
     const newPositionY = board.positionY + y / canvas.camera.zoom;
-    updateBoardMutation.mutate({
+    moveBoardMutation.mutate({
       id: source?.id as string,
       positionX: newPositionX,
       positionY: newPositionY,
@@ -66,8 +67,11 @@ export default function Workspace() {
   };
 
   const { data: boards = [], isLoading, error } = useBoards();
+  const sortedBoards = [...boards].sort(
+    (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+  );
 
-  const canvas = useCanvas(boards);
+  const canvas = useCanvas(sortedBoards);
   const select = useSelect();
 
   useDisableBrowserZoom();
@@ -160,7 +164,7 @@ export default function Workspace() {
       >
         <AccessibleContextMenu select={select} onDelete={handleDelete}>
           <World camera={canvas.camera}>
-            {boards.map((board: Board) => (
+            {sortedBoards.map((board: Board) => (
               <BoardCard
                 key={board.id}
                 board={board}
