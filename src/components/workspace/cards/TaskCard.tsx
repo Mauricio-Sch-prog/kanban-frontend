@@ -46,6 +46,7 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
       ref={sortableRef}
       data-key={task.id}
       data-type="task"
+      style={{ height: 100 }}
       className={`w-full min-w-0 overflow-hidden rounded-md border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-200 shadow-sm transition-all hover:border-zinc-700 hover:bg-zinc-900/80 hover:shadow-md ${className}`}
     >
       <input

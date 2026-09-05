@@ -152,6 +152,10 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
   const laneAmount = lanes.length;
   const minWidth = laneAmount * 200;
 
+  const highestTaskCount = Math.max(...lanes.map((lane: Lane) => lane.tasks?.length || 0), 0);
+  const heightForTasks = highestTaskCount * 100;
+  const height = heightForTasks < 100 ? 100 : heightForTasks;
+
   return (
     <div
       data-key={board.id}
@@ -165,7 +169,6 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
         left: board.positionX,
         top: board.positionY,
         width: getWidth(),
-        height: board.height,
       }}
     >
       <div ref={!isResizing ? draggableRef : undefined}>
@@ -188,6 +191,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
         className="mt-3 grid min-h-0 flex-1 gap-3"
         style={{
           gridTemplateColumns: `repeat(${Math.max(lanes.length, 1)}, minmax(0, 1fr))`,
+          minHeight: height,
         }}
         ref={droppableRef}
       >
