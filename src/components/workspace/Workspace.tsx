@@ -161,7 +161,12 @@ export default function Workspace() {
         <AccessibleContextMenu select={select} onDelete={handleDelete}>
           <World camera={canvas.camera}>
             {boards.map((board: Board) => (
-              <BoardCard key={board.id} board={board} useSelect={select} />
+              <BoardCard
+                key={board.id}
+                board={board}
+                useSelect={select}
+                zoom={canvas.camera.zoom}
+              />
             ))}
           </World>
         </AccessibleContextMenu>

@@ -3,28 +3,87 @@
 import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
 import LaneCard from './LaneCard';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { UseSelect } from '@/hooks/workspace/useSelect';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
-interface BoardProps {
-  id: string;
-  name: string;
-  positionX: number;
-  positionY: number;
-  width: number;
-  height: number;
-}
+import { Board } from '@/types/board';
 
 interface BoardCardProps {
-  board: BoardProps;
+  board: Board;
   useSelect: UseSelect;
+  zoom: number;
 }
 
-export default function BoardCard({ board, useSelect }: BoardCardProps) {
-  const { ref } = useDraggable({
+export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
+  const resizeState = useRef<{
+    startX: number;
+    startWidth: number;
+    currentWidth: number;
+  } | null>(null);
+
+  const [width, setWidth] = useState(board.width);
+  const [isResizing, setIsResizing] = useState(false);
+
+  const getWidth = () => {
+    return width > minWidth ? width : minWidth;
+  };
+
+  useEffect(() => {
+    if (board.width === width) return;
+
+    const ref = requestAnimationFrame(() => setWidth(width));
+
+    return () => cancelAnimationFrame(ref);
+  }, [board.width, width]);
+
+  const handleResizePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setIsResizing(true);
+
+    resizeState.current = {
+      startX: event.clientX,
+      startWidth: getWidth(),
+      currentWidth: width,
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!resizeState.current) return;
+
+      const deltaX = (event.clientX - resizeState.current.startX) / zoom;
+
+      const newWidth = Math.max(200, resizeState.current.startWidth + deltaX);
+
+      resizeState.current.currentWidth = newWidth;
+
+      setWidth(newWidth);
+    };
+
+    const handlePointerUp = () => {
+      if (!resizeState.current) return;
+
+      const finalWidth = resizeState.current.currentWidth;
+
+      updateBoardMutation.mutate({
+        id: board.id,
+        width: finalWidth,
+      });
+
+      resizeState.current = null;
+      setIsResizing(false);
+
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+  };
+  const { ref: draggableRef } = useDraggable({
     id: board.id,
     type: 'board',
   });
@@ -58,12 +117,12 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
   if (isLoading) {
     return (
       <div
-        ref={ref}
+        ref={draggableRef}
         className="absolute rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400 shadow-xl"
         style={{
           left: board.positionX,
           top: board.positionY,
-          width: board.width,
+          width: width,
           height: board.height,
         }}
       >
@@ -75,12 +134,12 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
   if (error) {
     return (
       <div
-        ref={ref}
+        ref={draggableRef}
         className="absolute rounded-xl border border-red-900/50 bg-zinc-950 p-4 text-sm text-red-400 shadow-xl"
         style={{
           left: board.positionX,
           top: board.positionY,
-          width: board.width,
+          width: width,
           height: board.height,
         }}
       >
@@ -90,10 +149,11 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
   }
   const lanes = details?.lanes ?? [];
   const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
+  const laneAmount = lanes.length;
+  const minWidth = laneAmount * 200;
 
   return (
     <div
-      ref={ref}
       data-key={board.id}
       data-type="board"
       className={`absolute flex flex-col overflow-hidden rounded-xl border p-4 shadow-2xl backdrop-blur-md ${
@@ -104,22 +164,24 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
       style={{
         left: board.positionX,
         top: board.positionY,
-        width: board.width,
+        width: getWidth(),
         height: board.height,
       }}
     >
-      <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
-        <input
-          type="text"
-          ref={inputRef}
-          value={name}
-          onChange={(e) => updateTime.setLocalName(e.target.value)}
-          onMouseDown={editableBehavior.mouseDown}
-          readOnly={!canEdit}
-          className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
-            isSelected && !canEdit ? 'cursor-text' : ''
-          }`}
-        />
+      <div ref={!isResizing ? draggableRef : undefined}>
+        <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
+          <input
+            type="text"
+            ref={inputRef}
+            value={name}
+            onChange={(e) => updateTime.setLocalName(e.target.value)}
+            onMouseDown={editableBehavior.mouseDown}
+            readOnly={!canEdit}
+            className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
+              isSelected && !canEdit ? 'cursor-text' : ''
+            }`}
+          />
+        </div>
       </div>
 
       <div
@@ -132,6 +194,12 @@ export default function BoardCard({ board, useSelect }: BoardCardProps) {
         {sortedLanes.map((lane: Lane) => (
           <LaneCard key={lane.id} lane={lane} board={board.id} />
         ))}
+      </div>
+      <div
+        onPointerDown={handleResizePointerDown}
+        className="absolute right-0 bottom-0 h-5 w-5 cursor-se-resize opacity-0 transition-opacity hover:opacity-100"
+      >
+        <div className="absolute right-1 bottom-1 h-2 w-2 rounded-sm border-r-2 border-b-2 border-zinc-500" />
       </div>
     </div>
   );
