@@ -56,7 +56,7 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
       data-key={lane.id}
       data-type="lane"
       ref={sortableRef}
-      className={`flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-900/50 p-3 shadow-inner ${className}`}
+      className={`border-text/10 bg-text/5 flex min-h-0 min-w-0 flex-1 flex-col space-y-2 overflow-hidden rounded-lg border p-3 pr-1 shadow-inner ${className}`}
     >
       <div className="mb-3 flex min-w-0 shrink-0 items-center justify-between gap-2 px-1">
         <input

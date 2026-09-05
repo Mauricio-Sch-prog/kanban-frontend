@@ -19,7 +19,6 @@ import { useDeleteLane } from '@/hooks/workspace/lane/useDeleteLane';
 import { useDeleteTask } from '@/hooks/workspace/task/useDeleteTask';
 
 export default function Workspace() {
-  const updateBoardMutation = useUpdateBoard(true);
   const moveBoardMutation = useUpdateBoard(false);
 
   const deleteBoardMutation = useDeleteBoard();

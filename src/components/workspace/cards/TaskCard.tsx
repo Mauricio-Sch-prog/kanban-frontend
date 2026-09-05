@@ -47,7 +47,7 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
       data-key={task.id}
       data-type="task"
       style={{ height: 100 }}
-      className={`w-full min-w-0 overflow-hidden rounded-md border border-zinc-800 bg-zinc-950 p-3 text-sm text-zinc-200 shadow-sm transition-all hover:border-zinc-700 hover:bg-zinc-900/80 hover:shadow-md ${className}`}
+      className={`border-text/10 bg-primary text-text/90 hover:border-text/30 w-full min-w-0 overflow-hidden rounded-md border p-3 text-sm shadow-sm transition-all hover:shadow-md hover:brightness-110 ${className}`}
     >
       <input
         type="text"
@@ -62,7 +62,7 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
       />
 
       {task.description && (
-        <div className="mt-1 min-w-0 text-xs wrap-break-word text-zinc-500">{task.description}</div>
+        <div className="text-text/50 mt-1 min-w-0 text-xs wrap-break-word">{task.description}</div>
       )}
     </div>
   );

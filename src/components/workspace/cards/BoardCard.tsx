@@ -83,6 +83,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
   };
+
   const { ref: draggableRef } = useDraggable({
     id: board.id,
     type: 'board',
@@ -118,7 +119,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
     return (
       <div
         ref={draggableRef}
-        className="absolute rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-sm text-zinc-400 shadow-xl"
+        className="border-text/10 bg-primary text-text/70 absolute rounded-xl border p-4 text-sm shadow-xl"
         style={{
           left: board.positionX,
           top: board.positionY,
@@ -135,7 +136,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
     return (
       <div
         ref={draggableRef}
-        className="absolute rounded-xl border border-red-900/50 bg-zinc-950 p-4 text-sm text-red-400 shadow-xl"
+        className="bg-primary absolute rounded-xl border border-red-900/50 p-4 text-sm text-red-400 shadow-xl"
         style={{
           left: board.positionX,
           top: board.positionY,
@@ -147,6 +148,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
       </div>
     );
   }
+
   const lanes = details?.lanes ?? [];
   const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
   const laneAmount = lanes.length;
@@ -162,8 +164,8 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
       data-type="board"
       className={`absolute flex flex-col overflow-hidden rounded-xl border p-4 shadow-2xl backdrop-blur-md ${
         isSelected
-          ? 'border-accent ring-accent/50 bg-zinc-900/90 ring-2 shadow-blue-500/10'
-          : 'border-zinc-800/80 bg-zinc-950/90 hover:border-zinc-700'
+          ? 'border-accent ring-accent/50 bg-primary/90 shadow-accent/10 ring-2'
+          : 'border-text/10 bg-primary/90 hover:border-text/30'
       }`}
       style={{
         left: board.positionX,
@@ -172,7 +174,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
       }}
     >
       <div ref={!isResizing ? draggableRef : undefined}>
-        <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
+        <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2">
           <input
             type="text"
             ref={inputRef}
@@ -203,7 +205,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
         onPointerDown={handleResizePointerDown}
         className="absolute right-0 bottom-0 h-5 w-5 cursor-se-resize opacity-0 transition-opacity hover:opacity-100"
       >
-        <div className="absolute right-1 bottom-1 h-2 w-2 rounded-sm border-r-2 border-b-2 border-zinc-500" />
+        <div className="border-text/50 absolute right-1 bottom-1 h-2 w-2 rounded-sm border-r-2 border-b-2" />
       </div>
     </div>
   );

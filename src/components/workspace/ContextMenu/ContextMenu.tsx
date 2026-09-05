@@ -38,13 +38,13 @@ export default function AccessibleContextMenu({
 
           setContextMenuTarget(board?.dataset.key ?? '');
         }}
-        className="border-primary/30 bg-primary/5 text-text/70 hover:bg-primary/10 flex h-full w-full items-center justify-center rounded-2xl border-2 border-dashed transition-colors"
+        className="border-primary/30 bg-primary/0 text-text/70 flex h-full w-full items-center justify-center rounded-2xl border-2 border-dashed transition-colors"
       >
         {children}
       </ContextMenu.Trigger>
 
       <ContextMenu.Portal>
-        <ContextMenu.Content className="border-primary/20 bg-bg animate-in fade-in zoom-in-95 z-50 min-w-44 rounded-xl border p-1.5 shadow-2xl backdrop-blur-md duration-100">
+        <ContextMenu.Content className="border-text/15 bg-primary animate-in fade-in zoom-in-95 z-50 min-w-44 rounded border p-1.5 shadow-2xl duration-100">
           {elementType === 'board' ? (
             <ContextMenuItem
               onClickCallback={() => {
