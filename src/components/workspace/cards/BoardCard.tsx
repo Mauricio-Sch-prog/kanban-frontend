@@ -161,6 +161,7 @@ export default function BoardCard({ board }: BoardCardProps) {
 
   return (
     <div
+      ref={!isResizing ? draggableRef : undefined}
       data-key={board.id}
       data-type="board"
       className={`absolute flex flex-col overflow-hidden rounded-xl border p-4 shadow-2xl backdrop-blur-md ${
@@ -174,20 +175,18 @@ export default function BoardCard({ board }: BoardCardProps) {
         width: getWidth(),
       }}
     >
-      <div ref={!isResizing ? draggableRef : undefined}>
-        <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2">
-          <input
-            type="text"
-            ref={inputRef}
-            value={name}
-            onChange={(e) => updateTime.setLocalName(e.target.value)}
-            onMouseDown={editableBehavior.mouseDown}
-            readOnly={!canEdit}
-            className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
-              isSelected && !canEdit ? 'cursor-text' : ''
-            }`}
-          />
-        </div>
+      <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2">
+        <input
+          type="text"
+          ref={inputRef}
+          value={name}
+          onChange={(e) => updateTime.setLocalName(e.target.value)}
+          onMouseDown={editableBehavior.mouseDown}
+          readOnly={!canEdit}
+          className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
+            isSelected && !canEdit ? 'cursor-text' : ''
+          }`}
+        />
       </div>
 
       <div

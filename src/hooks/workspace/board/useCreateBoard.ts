@@ -15,7 +15,7 @@ export function useCreateBoard() {
       const response = await apiFetch('/board', {
         method: 'POST',
         body: JSON.stringify({
-          props,
+          ...props,
         }),
       });
 

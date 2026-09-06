@@ -12,11 +12,6 @@ export type UseSelect = {
 };
 
 export default function useSelect(): UseSelect {
-  // const [value, setValue] = useState({
-  //   id: '',
-  //   type: '',
-  //   board: '',
-  // });
   const value = useSelectStore((state) => state.value);
   const setValue = useSelectStore((state) => state.setValue);
 
@@ -36,8 +31,6 @@ export default function useSelect(): UseSelect {
         type: keyElement.dataset.type || '',
         board: board?.dataset.key || '',
       });
-      console.log(value);
-
       return true;
     }
 
@@ -46,7 +39,6 @@ export default function useSelect(): UseSelect {
       type: '',
       board: '',
     });
-    console.log(value);
     return false;
   };
 

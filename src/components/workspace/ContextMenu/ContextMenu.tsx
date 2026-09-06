@@ -1,6 +1,6 @@
 'use client';
 
-import { UseSelect } from '@/hooks/workspace/useSelect';
+import useSelect from '@/hooks/workspace/useSelect';
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -8,24 +8,50 @@ import ContextMenuItem from './ContextMenuItem';
 import { useCreateLane } from '@/hooks/workspace/lane/useCreateLane';
 import { useCreateBoard } from '@/hooks/workspace/board/useCreateBoard';
 import { useCreateTask } from '@/hooks/workspace/task/useCreateTask';
+import { useDeleteBoard } from '@/hooks/workspace/board/useDeleteBoard';
+import { useDeleteLane } from '@/hooks/workspace/lane/useDeleteLane';
+import { useDeleteTask } from '@/hooks/workspace/task/useDeleteTask';
+import { useCanvas } from '@/hooks/workspace/useCanvas';
+import { useBoards } from '@/hooks/workspace/board/useBoard';
 
 interface BoardContextMenuProps {
   children: React.ReactNode;
-  select: UseSelect;
-  onEdit?: (id: string) => void;
-  onDelete?: () => void;
 }
 
-export default function AccessibleContextMenu({
-  children,
-  select,
-  onDelete,
-}: BoardContextMenuProps) {
+export default function AccessibleContextMenu({ children }: BoardContextMenuProps) {
+  const deleteBoardMutation = useDeleteBoard();
+  const deleteLaneMutation = useDeleteLane();
+  const deleteTaskMutation = useDeleteTask();
+
   const [contextMenuTarget, setContextMenuTarget] = useState('');
   const createBoardMutation = useCreateBoard();
   const createLaneMutation = useCreateLane();
   const createTaskMutation = useCreateTask();
+
+  const { data: boards = [] } = useBoards();
+  const select = useSelect();
+  const canvas = useCanvas(boards);
   const elementType = select.value.type;
+
+  const handleDelete = async () => {
+    if (select.value.type === 'board') {
+      deleteBoardMutation.mutate(select.value.id);
+    }
+
+    if (select.value.type === 'lane') {
+      deleteLaneMutation.mutate({
+        id: select.value.id,
+        board: select.value.board,
+      });
+    }
+
+    if (select.value.type === 'task') {
+      deleteTaskMutation.mutate({
+        id: select.value.id,
+        board: select.value.board,
+      });
+    }
+  };
 
   return (
     <ContextMenu.Root>
@@ -74,7 +100,11 @@ export default function AccessibleContextMenu({
           ) : elementType !== 'task' ? (
             <ContextMenuItem
               onClickCallback={() => {
-                // createBoardMutation.mutate('New board');
+                createBoardMutation.mutate({
+                  name: 'New board',
+                  positionX: canvas.mouseWorld.x,
+                  positionY: canvas.mouseWorld.y,
+                });
               }}
             >
               <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />
@@ -88,7 +118,7 @@ export default function AccessibleContextMenu({
             <ContextMenu.Item
               onClick={() => {
                 if (contextMenuTarget) {
-                  onDelete?.();
+                  handleDelete?.();
                 }
               }}
               className="flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm text-red-500 outline-none hover:bg-red-500/10 focus:bg-red-500/10"

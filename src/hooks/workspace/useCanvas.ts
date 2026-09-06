@@ -11,9 +11,11 @@ const CONTENT_PADDING = 500;
 
 export function useCanvas(boards: Board[]) {
   const camera = useCanvasStore((state) => state.camera);
+  const mouseWorld = useCanvasStore((state) => state.mouseWorld);
   const isDragging = useCanvasStore((state) => state.isDragging);
 
   const setCamera = useCanvasStore((state) => state.setCamera);
+  const setMouseWorld = useCanvasStore((state) => state.setMouseWorld);
   const setIsDragging = useCanvasStore((state) => state.setIsDragging);
 
   const [isPanning, setIsPanning] = useState(false);
@@ -87,6 +89,7 @@ export function useCanvas(boards: Board[]) {
   };
 
   const pan = (e: React.MouseEvent) => {
+    setMouseWorld(screenToWorld(e.clientX, e.clientY, camera));
     if (e.button === 2) return;
     if (!isPanning) return;
 
@@ -154,6 +157,7 @@ export function useCanvas(boards: Board[]) {
 
   return {
     camera,
+    mouseWorld,
 
     isPanning,
     isDragging,
