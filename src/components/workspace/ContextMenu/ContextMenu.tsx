@@ -74,7 +74,7 @@ export default function AccessibleContextMenu({
           ) : elementType !== 'task' ? (
             <ContextMenuItem
               onClickCallback={() => {
-                createBoardMutation.mutate('New board');
+                // createBoardMutation.mutate('New board');
               }}
             >
               <Plus className="size-5 transition-transform duration-200 group-hover:rotate-90" />

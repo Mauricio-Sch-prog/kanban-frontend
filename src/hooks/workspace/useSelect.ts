@@ -1,3 +1,4 @@
+import { useSelectStore } from '@/contexts/SelectContext';
 import React, { useState } from 'react';
 
 export type UseSelect = {
@@ -11,11 +12,13 @@ export type UseSelect = {
 };
 
 export default function useSelect(): UseSelect {
-  const [value, setValue] = useState({
-    id: '',
-    type: '',
-    board: '',
-  });
+  // const [value, setValue] = useState({
+  //   id: '',
+  //   type: '',
+  //   board: '',
+  // });
+  const value = useSelectStore((state) => state.value);
+  const setValue = useSelectStore((state) => state.setValue);
 
   const selectFromTarget = (target: EventTarget | null) => {
     const element = target as HTMLElement | null;
@@ -33,6 +36,8 @@ export default function useSelect(): UseSelect {
         type: keyElement.dataset.type || '',
         board: board?.dataset.key || '',
       });
+      console.log(value);
+
       return true;
     }
 
@@ -41,6 +46,7 @@ export default function useSelect(): UseSelect {
       type: '',
       board: '',
     });
+    console.log(value);
     return false;
   };
 

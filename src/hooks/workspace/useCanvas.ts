@@ -1,25 +1,27 @@
+import { useCanvasStore } from '@/contexts/CanvasContext';
 import { getContentBounds } from '@/lib/utils';
+import { Camera } from '@/stores/canvasStore';
 import { Board } from '@/types/board';
 import { useEffect, useRef, useState } from 'react';
 
 const MIN_ZOOM = 0.1;
 const MAX_ZOOM = 4;
 
-interface Camera {
-  x: number;
-  y: number;
-  zoom: number;
-}
+const CONTENT_PADDING = 500;
 
 export function useCanvas(boards: Board[]) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [camera, setCamera] = useState<Camera>({
+  const camera = useCanvasStore((state) => state.camera);
+  const isDragging = useCanvasStore((state) => state.isDragging);
+
+  const setCamera = useCanvasStore((state) => state.setCamera);
+  const setIsDragging = useCanvasStore((state) => state.setIsDragging);
+
+  const [isPanning, setIsPanning] = useState(false);
+
+  const lastPointer = useRef({
     x: 0,
     y: 0,
-    zoom: 1,
   });
-
-  const CONTENT_PADDING = 500;
 
   const bounds = getContentBounds(boards);
 
@@ -28,6 +30,10 @@ export function useCanvas(boards: Board[]) {
 
   const maxX = bounds.maxX + CONTENT_PADDING;
   const maxY = bounds.maxY + CONTENT_PADDING;
+
+  const clamp = (value: number, min: number, max: number) => {
+    return Math.min(Math.max(value, min), max);
+  };
 
   const clampCamera = (camera: Camera): Camera => {
     const viewportWidth = window.innerWidth;
@@ -55,17 +61,6 @@ export function useCanvas(boards: Board[]) {
           ? (minY + maxY - visibleHeight) / 2
           : Math.min(Math.max(camera.y, minCameraY), maxCameraY),
     };
-  };
-
-  const [isPanning, setIsPanning] = useState(false);
-
-  const lastPointer = useRef({
-    x: 0,
-    y: 0,
-  });
-
-  const clamp = (value: number, min: number, max: number) => {
-    return Math.min(Math.max(value, min), max);
   };
 
   const screenToWorld = (screenX: number, screenY: number, camera: Camera) => {
@@ -159,6 +154,7 @@ export function useCanvas(boards: Board[]) {
 
   return {
     camera,
+
     isPanning,
     isDragging,
 
@@ -167,6 +163,7 @@ export function useCanvas(boards: Board[]) {
     stopPan,
     zoomAt,
 
+    setCamera,
     setIsDragging,
 
     screenToWorld,

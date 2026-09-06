@@ -4,25 +4,26 @@ import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
 import LaneCard from './LaneCard';
 import { useEffect, useRef, useState } from 'react';
-import { UseSelect } from '@/hooks/workspace/useSelect';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 import { Board } from '@/types/board';
+import { useCanvasStore } from '@/contexts/CanvasContext';
+import { useSelectStore } from '@/contexts/SelectContext';
 
 interface BoardCardProps {
   board: Board;
-  useSelect: UseSelect;
-  zoom: number;
 }
 
-export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
+export default function BoardCard({ board }: BoardCardProps) {
   const resizeState = useRef<{
     startX: number;
     startWidth: number;
     currentWidth: number;
   } | null>(null);
+  const zoom = useCanvasStore((state) => state.camera.zoom);
+  const selectValue = useSelectStore((state) => state.value);
 
   const [width, setWidth] = useState(board.width);
   const [isResizing, setIsResizing] = useState(false);
@@ -99,7 +100,7 @@ export default function BoardCard({ board, useSelect, zoom }: BoardCardProps) {
   });
 
   const { data: details, isLoading, error } = useBoardDetails(board.id);
-  const isSelected = useSelect.value.board === board.id;
+  const isSelected = selectValue.board === board.id;
 
   const updateBoardMutation = useUpdateBoard(true);
 

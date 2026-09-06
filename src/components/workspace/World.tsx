@@ -1,15 +1,12 @@
+import { useCanvasStore } from '@/contexts/CanvasContext';
 import { ReactNode } from 'react';
 
 interface WorldProps {
   children: ReactNode;
-  camera: {
-    x: number;
-    y: number;
-    zoom: number;
-  };
 }
 
-export default function World({ children, camera }: WorldProps) {
+export default function World({ children }: WorldProps) {
+  const camera = useCanvasStore((state) => state.camera);
   return (
     <div
       className="absolute top-0 left-0"

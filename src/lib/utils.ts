@@ -31,7 +31,7 @@ export function getContentBounds(boards: Board[]): Bounds {
 
     maxX = Math.max(maxX, board.positionX + board.width);
 
-    maxY = Math.max(maxY, board.positionY + board.height);
+    maxY = Math.max(maxY, board.positionY + 200);
   }
 
   return {
