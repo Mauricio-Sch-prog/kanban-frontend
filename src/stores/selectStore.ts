@@ -12,7 +12,6 @@ export interface SelectState {
   value: Value;
 
   setValue: (value: ValueUpdater) => void;
-
 }
 
 export function createSelectStore() {
@@ -28,6 +27,5 @@ export function createSelectStore() {
         value: typeof value === 'function' ? value(state.value) : value,
       }));
     },
-
   }));
 }
