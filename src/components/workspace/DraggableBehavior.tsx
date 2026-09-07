@@ -75,8 +75,10 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
         const { source, target } = event.operation;
 
         if (isSortable(source)) {
-          const { index: newIndex } = source.sortable;
-
+          let { index: newIndex } = source.sortable;
+          if (source.data.board !== target?.data.board) {
+            newIndex = 0;
+          }
           if (source.type === 'lane') {
             moveLaneMutation.mutate({
               laneId: source.data.lane,

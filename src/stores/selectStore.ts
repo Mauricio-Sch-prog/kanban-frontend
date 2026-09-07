@@ -4,6 +4,7 @@ export interface Value {
   id: string;
   type: string;
   board: string;
+  count: number;
 }
 
 type ValueUpdater = Value | ((prev: Value) => Value);
@@ -20,6 +21,7 @@ export function createSelectStore() {
       id: '',
       type: '',
       board: '',
+      count: 0,
     },
 
     setValue: (value) => {

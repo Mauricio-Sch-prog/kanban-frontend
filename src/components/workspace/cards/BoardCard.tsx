@@ -56,11 +56,9 @@ export default function BoardCard({ board }: BoardCardProps) {
       if (!resizeState.current) return;
 
       const deltaX = (event.clientX - resizeState.current.startX) / zoom;
-
       const newWidth = Math.max(200, resizeState.current.startWidth + deltaX);
 
       resizeState.current.currentWidth = newWidth;
-
       setWidth(newWidth);
     };
 
@@ -88,6 +86,9 @@ export default function BoardCard({ board }: BoardCardProps) {
   const { ref: draggableRef } = useDraggable({
     id: board.id,
     type: 'board',
+    data: {
+      board: board.id,
+    },
   });
 
   const { ref: droppableRef } = useDroppable({
@@ -114,7 +115,7 @@ export default function BoardCard({ board }: BoardCardProps) {
   const editableBehavior = useEditableBehavior(inputRef);
 
   const name = updateTime.localName ?? details?.name ?? board.name;
-  const canEdit = isSelected && editableBehavior.isEditing;
+  const canEdit = isSelected && selectValue.count > 0;
 
   if (isLoading) {
     return (
@@ -125,7 +126,7 @@ export default function BoardCard({ board }: BoardCardProps) {
           left: board.positionX,
           top: board.positionY,
           width: width,
-          height: board.height,
+          minHeight: board.height || 150,
         }}
       >
         Loading board...
@@ -142,7 +143,7 @@ export default function BoardCard({ board }: BoardCardProps) {
           left: board.positionX,
           top: board.positionY,
           width: width,
-          height: board.height,
+          minHeight: board.height || 150,
         }}
       >
         Error loading board
@@ -153,54 +154,62 @@ export default function BoardCard({ board }: BoardCardProps) {
   const lanes = details?.lanes ?? [];
   const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
   const laneAmount = lanes.length;
-  const minWidth = laneAmount * 200;
+  const minWidth = Math.max(laneAmount * 200, 280);
 
   const highestTaskCount = Math.max(...lanes.map((lane: Lane) => lane.tasks?.length || 0), 0);
-  const heightForTasks = highestTaskCount * 100;
-  const height = heightForTasks < 100 ? 100 : heightForTasks;
+  const minBoardHeight = Math.max(highestTaskCount * 110, 200);
 
   return (
     <div
       ref={!isResizing ? draggableRef : undefined}
       data-key={board.id}
       data-type="board"
-      className={`absolute flex flex-col overflow-hidden rounded-xl border p-4 shadow-2xl backdrop-blur-md ${
+      className={`absolute flex h-auto flex-col rounded-xl border p-4 shadow-2xl backdrop-blur-md transition-colors ${
         isSelected
           ? 'border-accent ring-accent/50 bg-primary/90 shadow-accent/10 ring-2'
-          : 'border-text/10 bg-primary/90 hover:border-text/30'
+          : 'border-text/10 bg-primary/90 hover:border-text/30 select-none'
       }`}
       style={{
         left: board.positionX,
         top: board.positionY,
         width: getWidth(),
+        minHeight: minBoardHeight,
       }}
     >
-      <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2">
-        <input
-          type="text"
-          ref={inputRef}
-          value={name}
-          onChange={(e) => updateTime.setLocalName(e.target.value)}
-          onMouseDown={editableBehavior.mouseDown}
-          readOnly={!canEdit}
-          className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
-            isSelected && !canEdit ? 'cursor-text' : ''
-          }`}
-        />
+      <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2 select-none">
+        {canEdit ? (
+          <input
+            type="text"
+            ref={inputRef}
+            value={name}
+            onChange={(e) => updateTime.setLocalName(e.target.value)}
+            onMouseDown={editableBehavior.mouseDown}
+            readOnly={!canEdit}
+            className="text-md text-accent w-full rounded border-0 bg-transparent px-2 py-1 outline-none"
+          />
+        ) : (
+          <div className="text-md text-accent w-full cursor-grab px-2 py-1 select-none">{name}</div>
+        )}
       </div>
 
       <div
-        className="mt-3 grid min-h-0 flex-1 gap-3"
+        className="mt-3 grid min-h-35 w-full flex-1 gap-3"
         style={{
           gridTemplateColumns: `repeat(${Math.max(lanes.length, 1)}, minmax(0, 1fr))`,
-          minHeight: height,
         }}
         ref={droppableRef}
       >
         {sortedLanes.map((lane: Lane) => (
           <LaneCard key={lane.id} lane={lane} board={board.id} />
         ))}
+
+        {lanes.length === 0 && (
+          <div className="border-text/20 text-text/40 flex h-full min-h-30 w-full items-center justify-center rounded-lg border-2 border-dashed text-xs select-none">
+            Drop lane here
+          </div>
+        )}
       </div>
+
       <div
         onPointerDown={handleResizePointerDown}
         className="absolute right-0 bottom-0 h-5 w-5 cursor-se-resize opacity-0 transition-opacity hover:opacity-100"

@@ -34,6 +34,7 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
     accept: 'task',
     data: {
       lane: lane.id,
+      board: board,
     },
   });
 
@@ -56,7 +57,7 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
       data-key={lane.id}
       data-type="lane"
       ref={sortableRef}
-      className={`border-text/10 bg-text/5 flex min-h-0 min-w-0 flex-1 flex-col space-y-2 overflow-hidden rounded-lg border p-3 pr-1 shadow-inner ${className}`}
+      className={`border-text/10 bg-text/5 flex h-auto min-h-full min-w-0 flex-1 flex-col space-y-2 rounded-lg border p-3 pr-1 shadow-inner ${className}`}
     >
       <div className="mb-3 flex min-w-0 shrink-0 items-center justify-between gap-2 px-1">
         <input
@@ -72,10 +73,7 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
         />
       </div>
 
-      <div
-        ref={droppableRef}
-        className="min-h-0 min-w-0 flex-1 space-y-2 overflow-x-hidden overflow-y-auto pr-1"
-      >
+      <div ref={droppableRef} className="flex min-h-0 flex-1 flex-col space-y-2 pr-1">
         {sortedTasks.map((task: Task) => (
           <TaskCard key={task.id} task={task} lane={lane.id} board={board} />
         ))}

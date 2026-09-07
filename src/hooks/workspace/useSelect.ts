@@ -1,5 +1,5 @@
 import { useSelectStore } from '@/contexts/SelectContext';
-import React, { useState } from 'react';
+import React from 'react';
 
 export type UseSelect = {
   value: {
@@ -30,6 +30,7 @@ export default function useSelect(): UseSelect {
         id: keyElement.dataset.key,
         type: keyElement.dataset.type || '',
         board: board?.dataset.key || '',
+        count: board?.dataset.key === value.board ? value.count + 1 : 0,
       });
       return true;
     }
@@ -38,6 +39,7 @@ export default function useSelect(): UseSelect {
       id: '',
       type: '',
       board: '',
+      count: 0,
     });
     return false;
   };

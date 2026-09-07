@@ -3,7 +3,7 @@ import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { Task } from '@/types/task';
 import { useSortable } from '@dnd-kit/react/sortable';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 type TaskCardProps = {
   task: Task;
@@ -54,12 +54,19 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
   const isEditingTitle = titleEditable.isEditing;
   const isEditingDesc = descEditable.isEditing;
 
+  useEffect(() => {
+    if (descInputRef.current) {
+      descInputRef.current.style.height = 'auto';
+      descInputRef.current.style.height = `${descInputRef.current.scrollHeight}px`;
+    }
+  }, [description]);
+
   return (
     <div
       ref={sortableRef}
       data-key={task.id}
       data-type="task"
-      className={`border-text/10 bg-primary text-text/90 hover:border-text/30 flex min-h-25 w-full min-w-0 flex-col gap-2 overflow-hidden rounded-md border p-3 text-sm shadow-sm transition-all hover:shadow-md hover:brightness-110 ${className}`}
+      className={`border-text/10 bg-primary text-text/90 hover:border-text/30 flex h-auto min-h-[100px] w-full min-w-0 flex-col gap-2 rounded-md border p-3 text-sm shadow-sm transition-all hover:shadow-md hover:brightness-110 ${className}`}
     >
       <input
         type="text"
@@ -81,8 +88,7 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
         onMouseDown={descEditable.mouseDown}
         readOnly={!isEditingDesc}
         placeholder="Add a description..."
-        rows={2}
-        className={`text-text/70 min-h-15 w-full resize-y scrollbar-thin rounded border-0 bg-transparent px-2 py-1 text-xs wrap-break-word transition-colors outline-none ${
+        className={`text-text/70 w-full resize-none overflow-hidden rounded border-0 bg-transparent px-2 py-1 text-xs wrap-break-word transition-colors outline-none ${
           !isEditingDesc ? 'cursor-text' : 'bg-black/10 dark:bg-white/10'
         }`}
       />
