@@ -9,7 +9,7 @@ import { useBoardContext } from '@/contexts/BoardContext';
 
 export default function DraggableBehavior({ children }: React.HTMLAttributes<HTMLDivElement>) {
   const { boards = [] as Board[] } = useBoardContext();
-  const moveBoardMutation = useUpdateBoard(false);
+  const moveBoardMutation = useUpdateBoard();
   const moveLaneMutation = useMoveLane();
   const moveTaskMutation = useMoveTask();
 

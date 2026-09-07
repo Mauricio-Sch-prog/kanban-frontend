@@ -2,14 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/services/api';
 import { Board } from '@/types/board';
 
-export function useUpdateBoard(isDetailsOnly: boolean = false) {
+export function useUpdateBoard() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (proprieties: Partial<Board>) => {
-      const response = await apiFetch(`/board/${proprieties.id}`, {
+    mutationFn: async (properties: Partial<Board>) => {
+      const response = await apiFetch(`/board/${properties.id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ ...proprieties, id: undefined }),
+        body: JSON.stringify({ ...properties, id: undefined }),
       });
 
       if (!response.success) {
@@ -17,8 +17,9 @@ export function useUpdateBoard(isDetailsOnly: boolean = false) {
       }
       return response.data;
     },
-    onMutate: async (updatedBoard) => {
-      await queryClient.cancelQueries({ queryKey: ['boards'] });
+
+    onMutate: (updatedBoard) => {
+      queryClient.cancelQueries({ queryKey: ['boards'] });
 
       const previousBoards = queryClient.getQueryData<Board[]>(['boards']);
 
@@ -27,8 +28,7 @@ export function useUpdateBoard(isDetailsOnly: boolean = false) {
           board.id === updatedBoard.id
             ? {
                 ...board,
-                ...(updatedBoard.positionX !== undefined && { positionX: updatedBoard.positionX }),
-                ...(updatedBoard.positionY !== undefined && { positionY: updatedBoard.positionY }),
+                ...updatedBoard,
               }
             : board
         )
@@ -43,12 +43,14 @@ export function useUpdateBoard(isDetailsOnly: boolean = false) {
       }
     },
 
+    onSuccess: (responseData, variables) => {
+      queryClient.setQueryData<Board[]>(['boards'], (old = []) =>
+        old.map((board) => (board.id === variables.id ? { ...board, ...responseData } : board))
+      );
+    },
+
     onSettled: (_data, err, variables) => {
-      if (isDetailsOnly) {
-        queryClient.invalidateQueries({ queryKey: [`boardDetails:${variables.id}`] });
-      } else {
-        queryClient.invalidateQueries({ queryKey: ['boards'] });
-      }
+      queryClient.invalidateQueries({ queryKey: [`boardDetails:${variables.id}`] });
     },
   });
 }

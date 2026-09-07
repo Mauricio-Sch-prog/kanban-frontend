@@ -102,7 +102,7 @@ export default function BoardCard({ board }: BoardCardProps) {
   const { data: details, isLoading, error } = useBoardDetails(board.id);
   const isSelected = selectValue.board === board.id;
 
-  const updateBoardMutation = useUpdateBoard(true);
+  const updateBoardMutation = useUpdateBoard();
 
   const updateTime = useNameEditTimer({
     id: board.id,
