@@ -12,7 +12,8 @@ import { useDeleteBoard } from '@/hooks/workspace/board/useDeleteBoard';
 import { useDeleteLane } from '@/hooks/workspace/lane/useDeleteLane';
 import { useDeleteTask } from '@/hooks/workspace/task/useDeleteTask';
 import { useCanvas } from '@/hooks/workspace/useCanvas';
-import { useBoards } from '@/hooks/workspace/board/useBoard';
+import { Board } from '@/types/board';
+import { useBoardContext } from '@/contexts/BoardContext';
 
 interface BoardContextMenuProps {
   children: React.ReactNode;
@@ -28,7 +29,8 @@ export default function AccessibleContextMenu({ children }: BoardContextMenuProp
   const createLaneMutation = useCreateLane();
   const createTaskMutation = useCreateTask();
 
-  const { data: boards = [] } = useBoards();
+  const { boards = [] as Board[] } = useBoardContext();
+
   const select = useSelect();
   const canvas = useCanvas(boards);
   const elementType = select.value.type;

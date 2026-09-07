@@ -8,4 +8,5 @@ export type Board = {
   height: number;
   width: number;
   lanes: Lane[];
+  updatedAt: Date;
 };

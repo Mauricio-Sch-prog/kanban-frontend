@@ -2,23 +2,14 @@
 
 import BoardCard from '@/components/workspace/cards/BoardCard';
 import { Board } from '@/types/board';
-import { useBoards } from '@/hooks/workspace/board/useBoard';
 import Viewport from './Viewport';
 import World from './World';
 import AccessibleContextMenu from './ContextMenu/ContextMenu';
-import { CanvasProvider } from '@/contexts/CanvasContext';
 import DraggableBehavior from './DraggableBehavior';
+import { useBoardContext } from '@/contexts/BoardContext';
 
-export default function Workspace() {
-  return (
-    <CanvasProvider>
-      <WorkspaceContent />
-    </CanvasProvider>
-  );
-}
-
-function WorkspaceContent() {
-  const { data: boards = [], isLoading, error } = useBoards();
+export default function WorkspaceContent() {
+  const { boards = [] as Board[], isLoading, error } = useBoardContext();
 
   const sortedBoards = [...boards].sort(
     (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()

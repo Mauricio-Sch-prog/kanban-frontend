@@ -1,4 +1,3 @@
-import { useBoards } from '@/hooks/workspace/board/useBoard';
 import { useCanvas } from '@/hooks/workspace/useCanvas';
 import { DragDropProvider, DragEndEvent } from '@dnd-kit/react';
 import { isSortable } from '@dnd-kit/dom/sortable';
@@ -6,9 +5,10 @@ import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useMoveLane } from '@/hooks/workspace/lane/useMoveLane';
 import { useMoveTask } from '@/hooks/workspace/task/useMoveTask';
 import { Board } from '@/types/board';
+import { useBoardContext } from '@/contexts/BoardContext';
 
 export default function DraggableBehavior({ children }: React.HTMLAttributes<HTMLDivElement>) {
-  const { data: boards = [] } = useBoards();
+  const { boards = [] as Board[] } = useBoardContext();
   const moveBoardMutation = useUpdateBoard(false);
   const moveLaneMutation = useMoveLane();
   const moveTaskMutation = useMoveTask();
