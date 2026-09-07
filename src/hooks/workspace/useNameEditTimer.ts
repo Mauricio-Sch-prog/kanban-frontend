@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 interface UseNameEditTimerProps {
   id: string;
   initialValue: string;
-  fieldKey?: 'name' | 'title';
+  fieldKey?: 'name' | 'title' | 'description';
   mutation: UseMutationResult;
 }
 

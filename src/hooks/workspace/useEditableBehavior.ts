@@ -1,6 +1,8 @@
 import { RefObject, useState } from 'react';
 
-export const useEditableBehavior = (ref: RefObject<HTMLInputElement | null>) => {
+export const useEditableBehavior = (
+  ref: RefObject<HTMLInputElement | HTMLTextAreaElement | null>
+) => {
   const [isEditing, setIsEditing] = useState(false);
   const mouseDown = () => {
     if (isEditing) return;

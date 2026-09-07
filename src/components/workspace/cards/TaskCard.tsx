@@ -28,42 +28,64 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
 
   const updateTaskMutation = useUpdateTask(board);
 
-  const updateTime = useNameEditTimer({
+  const titleTimer = useNameEditTimer({
     id: task.id,
     initialValue: task.title,
     fieldKey: 'title',
     mutation: updateTaskMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
   });
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const editableBehavior = useEditableBehavior(inputRef);
+  const descriptionTimer = useNameEditTimer({
+    id: task.id,
+    initialValue: task.description ?? '',
+    fieldKey: 'description',
+    mutation: updateTaskMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
+  });
 
-  const name = updateTime.localName ?? task.title;
-  const canEdit = editableBehavior.isEditing;
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const titleEditable = useEditableBehavior(titleInputRef);
+
+  const descInputRef = useRef<HTMLTextAreaElement>(null);
+  const descEditable = useEditableBehavior(descInputRef);
+
+  const title = titleTimer.localName ?? task.title;
+  const description = descriptionTimer.localName ?? task.description ?? '';
+
+  const isEditingTitle = titleEditable.isEditing;
+  const isEditingDesc = descEditable.isEditing;
 
   return (
     <div
       ref={sortableRef}
       data-key={task.id}
       data-type="task"
-      style={{ height: 100 }}
-      className={`border-text/10 bg-primary text-text/90 hover:border-text/30 w-full min-w-0 overflow-hidden rounded-md border p-3 text-sm shadow-sm transition-all hover:shadow-md hover:brightness-110 ${className}`}
+      className={`border-text/10 bg-primary text-text/90 hover:border-text/30 flex min-h-25 w-full min-w-0 flex-col gap-2 overflow-hidden rounded-md border p-3 text-sm shadow-sm transition-all hover:shadow-md hover:brightness-110 ${className}`}
     >
       <input
         type="text"
-        ref={inputRef}
-        value={name}
-        onChange={(e) => updateTime.setLocalName(e.target.value)}
-        onMouseDown={editableBehavior.mouseDown}
-        readOnly={!canEdit}
-        className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
-          !canEdit ? 'cursor-text' : ''
+        ref={titleInputRef}
+        value={title}
+        onChange={(e) => titleTimer.setLocalName(e.target.value)}
+        onMouseDown={titleEditable.mouseDown}
+        readOnly={!isEditingTitle}
+        placeholder="Task title..."
+        className={`text-md text-accent w-full rounded border-0 bg-transparent px-2 py-1 outline-none ${
+          !isEditingTitle ? 'cursor-text' : 'bg-black/10 dark:bg-white/10'
         }`}
       />
 
-      {task.description && (
-        <div className="text-text/50 mt-1 min-w-0 text-xs wrap-break-word">{task.description}</div>
-      )}
+      <textarea
+        ref={descInputRef}
+        value={description}
+        onChange={(e) => descriptionTimer.setLocalName(e.target.value)}
+        onMouseDown={descEditable.mouseDown}
+        readOnly={!isEditingDesc}
+        placeholder="Add a description..."
+        rows={2}
+        className={`text-text/70 min-h-15 w-full resize-y scrollbar-thin rounded border-0 bg-transparent px-2 py-1 text-xs wrap-break-word transition-colors outline-none ${
+          !isEditingDesc ? 'cursor-text' : 'bg-black/10 dark:bg-white/10'
+        }`}
+      />
     </div>
   );
 }
