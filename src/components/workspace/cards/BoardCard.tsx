@@ -164,7 +164,7 @@ export default function BoardCard({ board }: BoardCardProps) {
       ref={!isResizing ? draggableRef : undefined}
       data-key={board.id}
       data-type="board"
-      className={`absolute flex h-auto flex-col rounded-xl border p-4 shadow-2xl backdrop-blur-md transition-colors ${
+      className={`absolute flex flex-col rounded-xl border p-4 shadow-2xl backdrop-blur-md transition-colors ${
         isSelected
           ? 'border-accent ring-accent/50 bg-primary/90 shadow-accent/10 ring-2'
           : 'border-text/10 bg-primary/90 hover:border-text/30 select-none'
@@ -173,7 +173,7 @@ export default function BoardCard({ board }: BoardCardProps) {
         left: board.positionX,
         top: board.positionY,
         width: getWidth(),
-        minHeight: minBoardHeight,
+        height: minBoardHeight,
       }}
     >
       <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2 select-none">
@@ -193,7 +193,7 @@ export default function BoardCard({ board }: BoardCardProps) {
       </div>
 
       <div
-        className="mt-3 grid min-h-35 w-full flex-1 gap-3"
+        className="mt-3 grid min-h-0 w-full min-w-0 flex-1 gap-3"
         style={{
           gridTemplateColumns: `repeat(${Math.max(lanes.length, 1)}, minmax(0, 1fr))`,
         }}

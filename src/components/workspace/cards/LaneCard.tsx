@@ -7,15 +7,15 @@ import { useDroppable } from '@dnd-kit/react';
 import { useUpdateLane } from '@/hooks/workspace/lane/useUpdateLane';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
-import { useRef } from 'react';
+import { ComponentPropsWithoutRef, useRef } from 'react';
+import { useSelectStore } from '@/contexts/SelectContext';
 
-type LaneCardProps = {
+interface LaneCardProps extends ComponentPropsWithoutRef<'div'> {
   lane: Lane;
   board: string;
-  className?: string;
-};
+}
 
-export default function LaneCard({ lane, board, className = '' }: LaneCardProps) {
+export default function LaneCard({ lane, board, className = '', ...props }: LaneCardProps) {
   const { ref: sortableRef } = useSortable({
     id: lane.id,
     index: lane.index,
@@ -38,6 +38,8 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
     },
   });
 
+  const selectValue = useSelectStore((state) => state.value);
+
   const updateLaneMutation = useUpdateLane(board);
   const updateTime = useNameEditTimer({
     id: lane.id,
@@ -48,7 +50,7 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
   const editableBehavior = useEditableBehavior(inputRef);
 
   const name = updateTime.localName ?? lane.name;
-  const canEdit = editableBehavior.isEditing;
+  const canEdit = selectValue.board === board && selectValue.count > 0;
 
   const sortedTasks = [...lane.tasks].sort((a, b) => a.index - b.index);
 
@@ -57,9 +59,10 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
       data-key={lane.id}
       data-type="lane"
       ref={sortableRef}
-      className={`border-text/10 bg-text/5 flex h-auto min-h-full min-w-0 flex-1 flex-col space-y-2 rounded-lg border p-3 pr-1 shadow-inner ${className}`}
+      className={`border-text/10 bg-text/5 flex min-h-0 min-w-0 flex-col space-y-2 rounded-lg border p-3 pr-1 shadow-inner ${className}`}
+      {...props}
     >
-      <div className="mb-3 flex min-w-0 shrink-0 items-center justify-between gap-2 px-1">
+      {canEdit ? (
         <input
           type="text"
           ref={inputRef}
@@ -67,13 +70,16 @@ export default function LaneCard({ lane, board, className = '' }: LaneCardProps)
           onChange={(e) => updateTime.setLocalName(e.target.value)}
           onMouseDown={editableBehavior.mouseDown}
           readOnly={!canEdit}
-          className={`text-md text-accent rounded border-0 bg-transparent px-2 py-1 outline-none ${
-            !canEdit ? 'cursor-text' : ''
-          }`}
+          className="text-md text-accent w-full rounded border-0 bg-transparent px-2 py-1 outline-none"
         />
-      </div>
+      ) : (
+        <div className="text-md text-accent w-full cursor-grab px-2 py-1 select-none">{name}</div>
+      )}
 
-      <div ref={droppableRef} className="flex min-h-0 flex-1 flex-col space-y-2 pr-1">
+      <div
+        ref={droppableRef}
+        className="flex min-h-0 flex-1 flex-col space-y-2 overflow-hidden pr-1"
+      >
         {sortedTasks.map((task: Task) => (
           <TaskCard key={task.id} task={task} lane={lane.id} board={board} />
         ))}
