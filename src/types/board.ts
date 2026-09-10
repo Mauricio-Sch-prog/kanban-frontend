@@ -5,7 +5,6 @@ export type Board = {
   name: string;
   positionX: number;
   positionY: number;
-  height: number;
   width: number;
   lanes: Lane[];
   updatedAt: Date;

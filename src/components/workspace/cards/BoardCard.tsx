@@ -3,85 +3,39 @@
 import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
 import LaneCard from './LaneCard';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 import { Board } from '@/types/board';
-import { useCanvasStore } from '@/contexts/CanvasContext';
-import { useSelectStore } from '@/contexts/SelectContext';
+import { useCardDisplayData } from '@/hooks/workspace/useCardDisplay';
 
 interface BoardCardProps {
   board: Board;
 }
 
 export default function BoardCard({ board }: BoardCardProps) {
-  const resizeState = useRef<{
-    startX: number;
-    startWidth: number;
-    currentWidth: number;
-  } | null>(null);
-  const zoom = useCanvasStore((state) => state.camera.zoom);
-  const selectValue = useSelectStore((state) => state.value);
+  const { data: details, isLoading, error } = useBoardDetails(board.id);
 
-  const [width, setWidth] = useState(board.width);
-  const [isResizing, setIsResizing] = useState(false);
-
-  const getWidth = () => {
-    return width > minWidth ? width : minWidth;
-  };
+  const { updateBoard, useBoardDisplay } = useCardDisplayData();
 
   useEffect(() => {
-    if (board.width === width) return;
+    if (!isLoading && details) {
+      updateBoard(details);
+    }
+  }, [details, isLoading, updateBoard]);
 
-    const ref = requestAnimationFrame(() => setWidth(width));
-
-    return () => cancelAnimationFrame(ref);
-  }, [board.width, width]);
-
-  const handleResizePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    setIsResizing(true);
-
-    resizeState.current = {
-      startX: event.clientX,
-      startWidth: getWidth(),
-      currentWidth: width,
-    };
-
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!resizeState.current) return;
-
-      const deltaX = (event.clientX - resizeState.current.startX) / zoom;
-      const newWidth = Math.max(200, resizeState.current.startWidth + deltaX);
-
-      resizeState.current.currentWidth = newWidth;
-      setWidth(newWidth);
-    };
-
-    const handlePointerUp = () => {
-      if (!resizeState.current) return;
-
-      const finalWidth = resizeState.current.currentWidth;
-
-      updateBoardMutation.mutate({
-        id: board.id,
-        width: finalWidth,
-      });
-
-      resizeState.current = null;
-      setIsResizing(false);
-
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-    };
-
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-  };
+  const {
+    board: displayBoard,
+    width,
+    isSelected,
+    canEdit,
+    minBoardHeight,
+    isResizing,
+    handleResizePointerDown,
+    style,
+  } = useBoardDisplay(board);
 
   const { ref: draggableRef } = useDraggable({
     id: board.id,
@@ -100,9 +54,6 @@ export default function BoardCard({ board }: BoardCardProps) {
     },
   });
 
-  const { data: details, isLoading, error } = useBoardDetails(board.id);
-  const isSelected = selectValue.board === board.id;
-
   const updateBoardMutation = useUpdateBoard();
 
   const updateTime = useNameEditTimer({
@@ -115,7 +66,6 @@ export default function BoardCard({ board }: BoardCardProps) {
   const editableBehavior = useEditableBehavior(inputRef);
 
   const name = updateTime.localName ?? details?.name ?? board.name;
-  const canEdit = isSelected && selectValue.count > 0;
 
   if (isLoading) {
     return (
@@ -125,8 +75,7 @@ export default function BoardCard({ board }: BoardCardProps) {
         style={{
           left: board.positionX,
           top: board.positionY,
-          width: width,
-          minHeight: board.height || 150,
+          width,
         }}
       >
         Loading board...
@@ -142,8 +91,7 @@ export default function BoardCard({ board }: BoardCardProps) {
         style={{
           left: board.positionX,
           top: board.positionY,
-          width: width,
-          minHeight: board.height || 150,
+          width,
         }}
       >
         Error loading board
@@ -152,12 +100,8 @@ export default function BoardCard({ board }: BoardCardProps) {
   }
 
   const lanes = details?.lanes ?? [];
-  const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
-  const laneAmount = lanes.length;
-  const minWidth = Math.max(laneAmount * 200, 280);
 
-  const highestTaskCount = Math.max(...lanes.map((lane: Lane) => lane.tasks?.length || 0), 0);
-  const minBoardHeight = Math.max(highestTaskCount * 110, 200);
+  const sortedLanes = [...lanes].sort((a, b) => a.index - b.index);
 
   return (
     <div
@@ -169,12 +113,7 @@ export default function BoardCard({ board }: BoardCardProps) {
           ? 'border-accent ring-accent/50 bg-primary/90 shadow-accent/10 ring-2'
           : 'border-text/10 bg-primary/90 hover:border-text/30 select-none'
       }`}
-      style={{
-        left: board.positionX,
-        top: board.positionY,
-        width: getWidth(),
-        height: minBoardHeight,
-      }}
+      style={style}
     >
       <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2 select-none">
         {canEdit ? (
