@@ -3,7 +3,7 @@
 import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
 import LaneCard from './LaneCard';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, CSSProperties } from 'react';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
@@ -13,9 +13,10 @@ import { useCardDisplayData } from '@/hooks/workspace/useCardDisplay';
 
 interface BoardCardProps {
   board: Board;
+  isOverlay?: boolean;
 }
 
-export default function BoardCard({ board }: BoardCardProps) {
+export default function BoardCard({ board, isOverlay = false }: BoardCardProps) {
   const { data: details, isLoading, error } = useBoardDetails(board.id);
 
   const { updateBoard, useBoardDisplay } = useCardDisplayData();
@@ -37,7 +38,7 @@ export default function BoardCard({ board }: BoardCardProps) {
     style,
   } = useBoardDisplay(board);
 
-  const { ref: draggableRef } = useDraggable({
+  const { ref: draggableRef, isDragging } = useDraggable({
     id: board.id,
     type: 'board',
     data: {
@@ -53,6 +54,11 @@ export default function BoardCard({ board }: BoardCardProps) {
       board: board.id,
     },
   });
+
+  const finalStyle = {
+    ...(isOverlay ? { ...style, left: 0, top: 0, transform: 'none', margin: 0 } : style),
+    ...(isDragging && !isOverlay ? { opacity: 0, pointerEvents: 'none' } : {}),
+  };
 
   const updateBoardMutation = useUpdateBoard();
 
@@ -70,12 +76,13 @@ export default function BoardCard({ board }: BoardCardProps) {
   if (isLoading) {
     return (
       <div
-        ref={draggableRef}
+        ref={!isResizing && !isOverlay ? draggableRef : undefined}
         className="border-text/10 bg-primary text-text/70 absolute rounded-xl border p-4 text-sm shadow-xl"
         style={{
-          left: board.positionX,
-          top: board.positionY,
+          left: isOverlay ? 0 : board.positionX,
+          top: isOverlay ? 0 : board.positionY,
           width,
+          ...(isDragging && !isOverlay ? { opacity: 0 } : {}),
         }}
       >
         Loading board...
@@ -86,12 +93,13 @@ export default function BoardCard({ board }: BoardCardProps) {
   if (error) {
     return (
       <div
-        ref={draggableRef}
+        ref={!isResizing && !isOverlay ? draggableRef : undefined}
         className="bg-primary absolute rounded-xl border border-red-900/50 p-4 text-sm text-red-400 shadow-xl"
         style={{
-          left: board.positionX,
-          top: board.positionY,
+          left: isOverlay ? 0 : board.positionX,
+          top: isOverlay ? 0 : board.positionY,
           width,
+          ...(isDragging && !isOverlay ? { opacity: 0 } : {}),
         }}
       >
         Error loading board
@@ -105,15 +113,15 @@ export default function BoardCard({ board }: BoardCardProps) {
 
   return (
     <div
-      ref={!isResizing ? draggableRef : undefined}
+      ref={!isResizing && !isOverlay ? draggableRef : undefined}
       data-key={board.id}
       data-type="board"
-      className={`absolute flex flex-col rounded-xl border p-4 shadow-2xl backdrop-blur-md transition-colors ${
+      className={`${isOverlay ? 'relative' : 'absolute'} flex flex-col rounded-xl border p-4 shadow-2xl backdrop-blur-md transition-colors ${
         isSelected
           ? 'border-accent ring-accent/50 bg-primary/90 shadow-accent/10 ring-2'
           : 'border-text/10 bg-primary/90 hover:border-text/30 select-none'
       }`}
-      style={style}
+      style={finalStyle as CSSProperties}
     >
       <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2 select-none">
         {canEdit ? (

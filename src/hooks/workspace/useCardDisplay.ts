@@ -5,6 +5,7 @@ import { Lane } from '@/types/lane';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useUpdateBoard } from './board/useUpdateBoard';
 import { useSelectStore } from '@/contexts/SelectContext';
+import { CardDisplay } from '@/stores/cardDisplayStore';
 
 const DEFAULT_MIN_WIDTH = 280;
 const MIN_BOARD_WIDTH = 200;
@@ -22,10 +23,21 @@ export function useCardDisplayData() {
         const index = prevCards.findIndex((card) => card.id === board.id);
 
         if (index === -1) {
-          return [...prevCards, board];
+          return [
+            ...prevCards,
+            { ...(board as CardDisplay), height: (board as CardDisplay).height ?? 0 },
+          ];
         }
 
-        return prevCards.map((card, i) => (i === index ? { ...card, ...board } : card));
+        return prevCards.map((card, i) =>
+          i === index
+            ? {
+                ...card,
+                ...board,
+                height: (board as CardDisplay).height ?? card.height ?? 0,
+              }
+            : card
+        );
       });
     },
     [setCards]

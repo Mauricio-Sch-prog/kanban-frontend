@@ -1,11 +1,13 @@
+import { useState } from 'react'; // <-- Add this
 import { useCanvas } from '@/hooks/workspace/useCanvas';
-import { DragDropProvider, DragEndEvent } from '@dnd-kit/react';
+import { DragDropProvider, DragEndEvent, DragOverlay } from '@dnd-kit/react'; // <-- Import DragOverlay
 import { isSortable } from '@dnd-kit/dom/sortable';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useMoveLane } from '@/hooks/workspace/lane/useMoveLane';
 import { useMoveTask } from '@/hooks/workspace/task/useMoveTask';
 import { Board } from '@/types/board';
 import { useBoardContext } from '@/contexts/BoardContext';
+import BoardCard from '@/components/workspace/cards/BoardCard'; // <-- Import your BoardCard
 
 export default function DraggableBehavior({ children }: React.HTMLAttributes<HTMLDivElement>) {
   const { boards = [] as Board[] } = useBoardContext();
@@ -14,6 +16,14 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
   const moveTaskMutation = useMoveTask();
 
   const canvas = useCanvas(boards);
+
+  type ActiveItem = {
+    id: string;
+    type: string;
+    data?: unknown;
+  };
+
+  const [activeItem, setActiveItem] = useState<ActiveItem | null>(null);
 
   const handleDragEnd = async (event: DragEndEvent) => {
     if (event.canceled) return;
@@ -29,7 +39,6 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
     }
 
     const newPositionX = board.positionX + x / canvas.camera.zoom;
-
     const newPositionY = board.positionY + y / canvas.camera.zoom;
 
     moveBoardMutation.mutate({
@@ -41,13 +50,25 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
 
   return (
     <DragDropProvider
-      onDragStart={() => {
+      onDragStart={(event) => {
         canvas.setIsDragging(true);
+
+        const { source } = event.operation;
+
+        if (!source) {
+          return;
+        }
+
+        setActiveItem({
+          id: source.id as string,
+          type: source.type as string,
+          data: source.data,
+        });
       }}
       onDragOver={(event) => {
         const { source, target } = event.operation;
 
-        if (!isSortable(source)) return;
+        if (!source || !isSortable(source)) return;
 
         if (source.type === 'lane') {
           const sourceBoard = source.data.board;
@@ -71,6 +92,7 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
       }}
       onDragEnd={(event) => {
         canvas.setIsDragging(false);
+        setActiveItem(null);
 
         const { source, target } = event.operation;
 
@@ -105,6 +127,28 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
       }}
     >
       {children}
+
+      <DragOverlay dropAnimation={null}>
+        {activeItem ? (
+          <div
+            style={{
+              transform: `scale(${canvas.camera.zoom})`,
+              transformOrigin: '0 0',
+              width: `${100 / canvas.camera.zoom}%`,
+              height: `${100 / canvas.camera.zoom}%`,
+              opacity: 0.9,
+              boxShadow: '0px 20px 40px rgba(0,0,0,0.2)',
+            }}
+          >
+            {activeItem.type === 'board' && (
+              <BoardCard
+                board={boards.find((b: Board) => b.id === activeItem.id)!}
+                isOverlay={true} // <-- Add this!
+              />
+            )}
+          </div>
+        ) : null}
+      </DragOverlay>
     </DragDropProvider>
   );
 }
