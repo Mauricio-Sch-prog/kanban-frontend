@@ -4,7 +4,7 @@ import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { Task } from '@/types/task';
 import { useSortable } from '@dnd-kit/react/sortable';
-import { ComponentPropsWithoutRef, useEffect, useRef } from 'react';
+import { ComponentPropsWithoutRef, useLayoutEffect, useEffect, useRef } from 'react';
 interface TaskCardProps extends ComponentPropsWithoutRef<'div'> {
   task: Task;
   lane: string;
@@ -64,12 +64,14 @@ export default function TaskCard({
   const canEdit =
     selectValue.board === board && selectValue.count > 0 && selectValue.id === task.id;
 
-  useEffect(() => {
-    if (descInputRef.current) {
-      descInputRef.current.style.height = 'auto';
-      descInputRef.current.style.height = `${descInputRef.current.scrollHeight}px`;
-    }
-  }, [description]);
+  useLayoutEffect(() => {
+    if (!canEdit || !descInputRef.current) return;
+
+    const textarea = descInputRef.current;
+
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [description, canEdit]);
 
   return (
     <div
@@ -103,10 +105,11 @@ export default function TaskCard({
           onChange={(e) => descriptionTimer.setLocalName(e.target.value)}
           onMouseDown={descEditable.mouseDown}
           readOnly={!canEdit}
-          className="text-md text-accent w-full rounded border-0 bg-transparent px-2 py-1 outline-none"
+          wrap="soft"
+          className="text-md text-accent w-full resize-none overflow-hidden rounded border-0 bg-transparent px-2 py-1 wrap-break-word whitespace-pre-wrap outline-none"
         />
       ) : (
-        <div className="text-md text-accent w-full cursor-grab px-2 py-1 select-none">
+        <div className="text-md text-accent w-full cursor-grab px-2 py-1 wrap-break-word whitespace-pre-wrap select-none">
           {description}
         </div>
       )}
