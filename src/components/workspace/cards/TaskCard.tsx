@@ -61,7 +61,8 @@ export default function TaskCard({
   const title = titleTimer.localName ?? task.title;
   const description = descriptionTimer.localName ?? task.description ?? '';
 
-  const canEdit = selectValue.board === board && selectValue.count > 0;
+  const canEdit =
+    selectValue.board === board && selectValue.count > 0 && selectValue.id === task.id;
 
   useEffect(() => {
     if (descInputRef.current) {

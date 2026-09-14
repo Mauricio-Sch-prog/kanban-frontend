@@ -1,4 +1,3 @@
-
 import { Lane } from '@/types/lane';
 import TaskCard from './TaskCard';
 import { Task } from '@/types/task';
@@ -76,19 +75,24 @@ export default function LaneCard({
       } ${className}`}
       {...props}
     >
-      {canEdit ? (
-        <input
-          type="text"
-          ref={inputRef}
-          value={name}
-          onChange={(e) => updateTime.setLocalName(e.target.value)}
-          onMouseDown={editableBehavior.mouseDown}
-          readOnly={!canEdit}
-          className="text-md text-accent w-full rounded border-0 bg-transparent px-2 py-1 outline-none"
-        />
-      ) : (
-        <div className="text-md text-accent w-full cursor-grab px-2 py-1 select-none">{name}</div>
-      )}
+      {/* Header Wrapper */}
+      <div className="flex w-full justify-center">
+        {canEdit ? (
+          <input
+            type="text"
+            ref={inputRef}
+            value={name}
+            onChange={(e) => updateTime.setLocalName(e.target.value)}
+            onMouseDown={editableBehavior.mouseDown}
+            readOnly={!canEdit}
+            className="text-md text-accent [field-sizing:content] max-w-full rounded border-0 bg-transparent px-2 py-1 text-center outline-none"
+          />
+        ) : (
+          <div className="text-md text-accent max-w-full cursor-grab truncate px-2 py-1 text-center select-none">
+            {name}
+          </div>
+        )}
+      </div>
 
       <div
         ref={!isOverlay ? droppableRef : undefined}

@@ -123,7 +123,8 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
       }`}
       style={finalStyle as CSSProperties}
     >
-      <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-between gap-2 border-b pb-2 select-none">
+      {/* Header Section */}
+      <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-center gap-2 border-b pb-2 select-none">
         {canEdit ? (
           <input
             type="text"
@@ -132,10 +133,12 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
             onChange={(e) => updateTime.setLocalName(e.target.value)}
             onMouseDown={editableBehavior.mouseDown}
             readOnly={!canEdit}
-            className="text-md text-accent w-full rounded border-0 bg-transparent px-2 py-1 outline-none"
+            className="text-md text-accent field-sizing-content max-w-full rounded border-0 bg-transparent px-2 py-1 text-center outline-none"
           />
         ) : (
-          <div className="text-md text-accent w-full cursor-grab px-2 py-1 select-none">{name}</div>
+          <div className="text-md text-accent cursor-grab truncate px-2 py-1 text-center select-none">
+            {name}
+          </div>
         )}
       </div>
 
