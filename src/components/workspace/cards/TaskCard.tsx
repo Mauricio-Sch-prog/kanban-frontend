@@ -4,17 +4,23 @@ import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { Task } from '@/types/task';
 import { useSortable } from '@dnd-kit/react/sortable';
-import { useEffect, useRef } from 'react';
-
-type TaskCardProps = {
+import { ComponentPropsWithoutRef, useEffect, useRef } from 'react';
+interface TaskCardProps extends ComponentPropsWithoutRef<'div'> {
   task: Task;
   lane: string;
   board: string;
-  className?: string;
-};
+  isOverlay?: boolean;
+}
 
-export default function TaskCard({ task, lane, board, className = '' }: TaskCardProps) {
-  const { ref: sortableRef } = useSortable({
+export default function TaskCard({
+  task,
+  lane,
+  board,
+  isOverlay = false,
+  className = '',
+  ...props
+}: TaskCardProps) {
+  const { ref: sortableRef, isDragging } = useSortable({
     id: task.id,
     index: task.index,
     group: `lane:${lane}`,
@@ -24,6 +30,7 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
       task: task.id,
       lane: lane,
       board: board,
+      cardData: task,
     },
   });
 
@@ -68,7 +75,12 @@ export default function TaskCard({ task, lane, board, className = '' }: TaskCard
       ref={sortableRef}
       data-key={task.id}
       data-type="task"
-      className={`border-text/10 bg-primary text-text/90 hover:border-text/30 flex h-auto min-h-25 w-full min-w-0 flex-col gap-2 rounded-md border p-3 text-sm shadow-sm hover:shadow-md hover:brightness-110 ${className}`}
+      className={`border-text/10 bg-primary text-text/90 hover:border-text/30 flex h-auto min-h-25 w-full min-w-0 flex-col gap-2 rounded-md border p-3 text-sm shadow-sm hover:shadow-md hover:brightness-110 ${
+        isDragging && !isOverlay ? 'pointer-events-none opacity-0' : ''
+      } ${
+        isOverlay ? 'bg-primary/95 border-accent/50 h-fit max-h-[80vh] w-64 shadow-2xl' : 'min-h-0'
+      } ${className}`}
+      {...props}
     >
       {canEdit ? (
         <input

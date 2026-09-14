@@ -8,6 +8,10 @@ import { useMoveTask } from '@/hooks/workspace/task/useMoveTask';
 import { Board } from '@/types/board';
 import { useBoardContext } from '@/contexts/BoardContext';
 import BoardCard from '@/components/workspace/cards/BoardCard'; // <-- Import your BoardCard
+import LaneCard from './cards/LaneCard';
+import { Lane } from '@/types/lane';
+import { Task } from '@/types/task';
+import TaskCard from './cards/TaskCard';
 
 export default function DraggableBehavior({ children }: React.HTMLAttributes<HTMLDivElement>) {
   const { boards = [] as Board[] } = useBoardContext();
@@ -20,7 +24,14 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
   type ActiveItem = {
     id: string;
     type: string;
-    data?: unknown;
+    dimensions?: { width: number; height: number };
+    data?: {
+      board?: string;
+      lane?: string;
+      task?: string;
+      cardData?: Lane | Task;
+      [key: string]: unknown;
+    };
   };
 
   const [activeItem, setActiveItem] = useState<ActiveItem | null>(null);
@@ -59,10 +70,16 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
           return;
         }
 
+        const element = document.querySelector(`[data-key="${source.id}"]`) as HTMLElement | null;
+        const dimensions = element
+          ? { width: element.offsetWidth, height: element.offsetHeight }
+          : undefined;
+
         setActiveItem({
           id: source.id as string,
           type: source.type as string,
           data: source.data,
+          dimensions,
         });
       }}
       onDragOver={(event) => {
@@ -136,16 +153,56 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
               transformOrigin: '0 0',
               width: `${100 / canvas.camera.zoom}%`,
               height: `${100 / canvas.camera.zoom}%`,
-              opacity: 0.9,
-              boxShadow: '0px 20px 40px rgba(0,0,0,0.2)',
+              opacity: 0.95,
             }}
           >
             {activeItem.type === 'board' && (
               <BoardCard
                 board={boards.find((b: Board) => b.id === activeItem.id)!}
-                isOverlay={true} // <-- Add this!
+                isOverlay={true}
               />
             )}
+
+            {activeItem.type === 'lane' &&
+              (() => {
+                const laneData = activeItem.data?.cardData as Lane | undefined;
+                const boardId = activeItem.data?.board as string | undefined;
+
+                if (!laneData || !boardId) return null;
+
+                return (
+                  <LaneCard
+                    lane={laneData}
+                    board={boardId}
+                    isOverlay={true}
+                    style={{
+                      width: activeItem.dimensions?.width,
+                      height: activeItem.dimensions?.height,
+                    }}
+                  />
+                );
+              })()}
+
+            {activeItem.type === 'task' &&
+              (() => {
+                const taskData = activeItem.data?.cardData as Task | undefined;
+                const boardId = activeItem.data?.board as string | undefined;
+
+                if (!taskData || !boardId) return null;
+
+                return (
+                  <TaskCard
+                    task={taskData}
+                    lane={taskData.lane}
+                    board={boardId}
+                    isOverlay={true}
+                    style={{
+                      width: activeItem.dimensions?.width,
+                      height: activeItem.dimensions?.height,
+                    }}
+                  />
+                );
+              })()}
           </div>
         ) : null}
       </DragOverlay>
