@@ -49,11 +49,15 @@ export default function LaneCard({
 
   const selectValue = useSelectStore((state) => state.value);
 
-  const updateLaneMutation = useUpdateLane(board);
+  const updateLaneMutation = useUpdateLane({
+    board: board,
+    invalidQueries: false,
+  });
   const updateTime = useNameEditTimer({
     id: lane.id,
     initialValue: lane.name,
     mutation: updateLaneMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
+    maxChar: 50,
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const editableBehavior = useEditableBehavior(inputRef);
@@ -75,7 +79,6 @@ export default function LaneCard({
       } ${className}`}
       {...props}
     >
-      {/* Header Wrapper */}
       <div className="flex w-full justify-center">
         {canEdit ? (
           <input
@@ -85,7 +88,7 @@ export default function LaneCard({
             onChange={(e) => updateTime.setLocalName(e.target.value)}
             onMouseDown={editableBehavior.mouseDown}
             readOnly={!canEdit}
-            className="text-md text-accent [field-sizing:content] max-w-full rounded border-0 bg-transparent px-2 py-1 text-center outline-none"
+            className="text-md text-accent field-sizing-content max-w-full rounded border-0 bg-transparent px-2 py-1 text-center outline-none"
           />
         ) : (
           <div className="text-md text-accent max-w-full cursor-grab truncate px-2 py-1 text-center select-none">

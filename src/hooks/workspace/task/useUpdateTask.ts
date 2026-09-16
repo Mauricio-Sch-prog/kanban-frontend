@@ -1,8 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/services/api';
 import { Task } from '@/types/task';
+import { Board } from '@/types/board';
 
-export function useUpdateTask(board: string) {
+interface useUpdateTaskProps {
+  board: string;
+  invalidQueries?: boolean;
+}
+
+export function useUpdateTask({ board, invalidQueries = true }: useUpdateTaskProps) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -17,8 +23,23 @@ export function useUpdateTask(board: string) {
       }
       return response.data;
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [`boardDetails:${board}`] });
+    onSettled: (_updatedTask, _error, proprieties) => {
+      if (invalidQueries) {
+        queryClient.invalidateQueries({ queryKey: [`boardDetails:${board}`] });
+      } else {
+        queryClient.setQueryData<Board>([`boardDetails:${board}`], (oldBoard) => {
+          if (!oldBoard) return oldBoard;
+          return {
+            ...oldBoard,
+            lanes: oldBoard.lanes.map((lane) => ({
+              ...lane,
+              tasks: lane.tasks.map((task) =>
+                task.id === proprieties.id ? { ...task, ...proprieties } : task
+              ),
+            })),
+          };
+        });
+      }
     },
   });
 }

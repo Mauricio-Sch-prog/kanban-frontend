@@ -21,6 +21,16 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
 
   const { updateBoard, useBoardDisplay } = useCardDisplayData();
 
+  const boardRef = useRef<HTMLDivElement | null>(null);
+
+  const setBoardElementRef = (node: HTMLDivElement | null) => {
+    boardRef.current = node;
+
+    if (!isOverlay) {
+      draggableRef(node);
+    }
+  };
+
   useEffect(() => {
     if (!isLoading && details) {
       updateBoard(details);
@@ -56,7 +66,9 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
   });
 
   const finalStyle = {
-    ...(isOverlay ? { ...style, left: 0, top: 0, transform: 'none', margin: 0 } : style),
+    ...(isOverlay
+      ? { ...style, left: 0, top: 0, transform: 'none', margin: 0 }
+      : { ...style, height: 'auto' }),
     ...(isDragging && !isOverlay ? { opacity: 0, pointerEvents: 'none' } : {}),
   };
 
@@ -66,6 +78,7 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
     id: board.id,
     initialValue: board.name,
     mutation: updateBoardMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
+    maxChar: 50,
   });
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -113,7 +126,7 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
 
   return (
     <div
-      ref={!isResizing && !isOverlay ? draggableRef : undefined}
+      ref={!isResizing ? setBoardElementRef : undefined}
       data-key={board.id}
       data-type="board"
       className={`${isOverlay ? 'relative' : 'absolute'} flex flex-col rounded-xl border p-4 shadow-2xl backdrop-blur-md transition-colors ${
@@ -123,7 +136,6 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
       }`}
       style={finalStyle as CSSProperties}
     >
-      {/* Header Section */}
       <div className="border-text/10 flex min-w-0 shrink-0 items-center justify-center gap-2 border-b pb-2 select-none">
         {canEdit ? (
           <input
@@ -143,7 +155,7 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
       </div>
 
       <div
-        className="mt-3 grid min-h-0 w-full min-w-0 flex-1 gap-3"
+        className="mt-3 grid w-full min-w-0 items-stretch gap-3"
         style={{
           gridTemplateColumns: `repeat(${Math.max(lanes.length, 1)}, minmax(0, 1fr))`,
         }}

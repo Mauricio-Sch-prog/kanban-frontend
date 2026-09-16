@@ -4,7 +4,7 @@ import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
 import { Task } from '@/types/task';
 import { useSortable } from '@dnd-kit/react/sortable';
-import { ComponentPropsWithoutRef, useLayoutEffect, useEffect, useRef } from 'react';
+import { ComponentPropsWithoutRef, useLayoutEffect, useRef } from 'react';
 interface TaskCardProps extends ComponentPropsWithoutRef<'div'> {
   task: Task;
   lane: string;
@@ -34,13 +34,14 @@ export default function TaskCard({
     },
   });
 
-  const updateTaskMutation = useUpdateTask(board);
+  const updateTaskMutation = useUpdateTask({ board: board, invalidQueries: false });
 
   const titleTimer = useNameEditTimer({
     id: task.id,
     initialValue: task.title,
     fieldKey: 'title',
     mutation: updateTaskMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
+    maxChar: 50,
   });
 
   const descriptionTimer = useNameEditTimer({
@@ -48,6 +49,8 @@ export default function TaskCard({
     initialValue: task.description ?? '',
     fieldKey: 'description',
     mutation: updateTaskMutation as Parameters<typeof useNameEditTimer>[0]['mutation'],
+    maxChar: 600,
+    nullable: true,
   });
 
   const selectValue = useSelectStore((state) => state.value);
