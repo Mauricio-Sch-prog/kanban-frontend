@@ -9,7 +9,7 @@ type DivProps = React.HTMLAttributes<HTMLDivElement>;
 
 export default function ToolBar(props: DivProps) {
   const createBoard = useCreateBoard();
-  const cardsDisplayData = useCardDisplayData()
+  const cardsDisplayData = useCardDisplayData();
 
   return (
     <div

@@ -96,10 +96,10 @@ export default function TaskCard({
           onChange={(e) => titleTimer.setLocalName(e.target.value)}
           onMouseDown={titleEditable.mouseDown}
           readOnly={!canEdit}
-          className="text-md text-accent w-full rounded border-0 bg-transparent px-2 py-1 outline-none"
+          className="text-accent w-full rounded border-0 bg-transparent px-2 py-1 text-lg outline-none"
         />
       ) : (
-        <div className="text-md text-accent w-full cursor-grab px-2 py-1 select-none">{title}</div>
+        <div className="text-accent w-full cursor-grab px-2 py-1 text-lg select-none">{title}</div>
       )}
       {canEdit ? (
         <textarea

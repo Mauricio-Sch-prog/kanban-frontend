@@ -3,7 +3,7 @@
 import { useBoardDetails } from '@/hooks/workspace/board/useBoardDetails';
 import { Lane } from '@/types/lane';
 import LaneCard from './LaneCard';
-import { useEffect, useRef, CSSProperties } from 'react';
+import { useEffect, useRef, CSSProperties, ComponentPropsWithoutRef } from 'react';
 import { useUpdateBoard } from '@/hooks/workspace/board/useUpdateBoard';
 import { useDraggable, useDroppable } from '@dnd-kit/react';
 import { useNameEditTimer } from '@/hooks/workspace/useNameEditTimer';
@@ -11,7 +11,7 @@ import { useEditableBehavior } from '@/hooks/workspace/useEditableBehavior';
 import { Board } from '@/types/board';
 import { useCardDisplayData } from '@/hooks/workspace/useCardDisplay';
 
-interface BoardCardProps {
+interface BoardCardProps extends ComponentPropsWithoutRef<'div'> {
   board: Board;
   isOverlay?: boolean;
 }
@@ -37,16 +37,8 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
     }
   }, [details, isLoading, updateBoard]);
 
-  const {
-    board: displayBoard,
-    width,
-    isSelected,
-    canEdit,
-    minBoardHeight,
-    isResizing,
-    handleResizePointerDown,
-    style,
-  } = useBoardDisplay(board);
+  const { width, isSelected, canEdit, isResizing, handleResizePointerDown, style } =
+    useBoardDisplay(board, boardRef, isLoading, isOverlay);
 
   const { ref: draggableRef, isDragging } = useDraggable({
     id: board.id,
@@ -66,10 +58,21 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
   });
 
   const finalStyle = {
+    ...style,
     ...(isOverlay
-      ? { ...style, left: 0, top: 0, transform: 'none', margin: 0 }
-      : { ...style, height: 'auto' }),
-    ...(isDragging && !isOverlay ? { opacity: 0, pointerEvents: 'none' } : {}),
+      ? {
+          left: 0,
+          top: 0,
+          transform: 'none',
+          margin: 0,
+        }
+      : {}),
+    ...(isDragging && !isOverlay
+      ? {
+          opacity: 0,
+          pointerEvents: 'none',
+        }
+      : {}),
   };
 
   const updateBoardMutation = useUpdateBoard();
@@ -145,10 +148,10 @@ export default function BoardCard({ board, isOverlay = false }: BoardCardProps) 
             onChange={(e) => updateTime.setLocalName(e.target.value)}
             onMouseDown={editableBehavior.mouseDown}
             readOnly={!canEdit}
-            className="text-md text-accent field-sizing-content max-w-full rounded border-0 bg-transparent px-2 py-1 text-center outline-none"
+            className="text-accent field-sizing-content max-w-full rounded border-0 bg-transparent px-2 py-1 text-center text-lg outline-none"
           />
         ) : (
-          <div className="text-md text-accent cursor-grab truncate px-2 py-1 text-center select-none">
+          <div className="text-accent cursor-grab truncate px-2 py-1 text-center text-lg select-none">
             {name}
           </div>
         )}

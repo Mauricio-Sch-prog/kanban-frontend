@@ -28,3 +28,13 @@ export function useCardDisplayStore<T>(selector: (state: CardDisplayState) => T)
 
   return useStore(store, selector);
 }
+
+export function useCardDisplayStoreApi(): CardDisplayStore {
+  const store = useContext(CardDisplayContext);
+
+  if (!store) {
+    throw new Error('useCardDisplayStoreApi must be used inside CardDisplayProvider');
+  }
+
+  return store;
+}

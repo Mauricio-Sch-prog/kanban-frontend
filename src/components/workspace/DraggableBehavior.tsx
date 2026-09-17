@@ -12,12 +12,16 @@ import LaneCard from './cards/LaneCard';
 import { Lane } from '@/types/lane';
 import { Task } from '@/types/task';
 import TaskCard from './cards/TaskCard';
+import { useCardDisplayStore } from '@/contexts/CardDisplayContext';
 
 export default function DraggableBehavior({ children }: React.HTMLAttributes<HTMLDivElement>) {
   const { boards = [] as Board[] } = useBoardContext();
   const moveBoardMutation = useUpdateBoard();
   const moveLaneMutation = useMoveLane();
   const moveTaskMutation = useMoveTask();
+
+  const cards = useCardDisplayStore((state) => state.cards);
+  console.log(cards);
 
   const canvas = useCanvas(boards);
 

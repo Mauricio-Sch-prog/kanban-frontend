@@ -2,7 +2,7 @@ import { useCanvasStore } from '@/contexts/CanvasContext';
 import { useCardDisplayStore } from '@/contexts/CardDisplayContext';
 import { Board } from '@/types/board';
 import { Lane } from '@/types/lane';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useUpdateBoard } from './board/useUpdateBoard';
 import { useSelectStore } from '@/contexts/SelectContext';
 import { CardDisplay } from '@/stores/cardDisplayStore';
@@ -43,7 +43,28 @@ export function useCardDisplayData() {
     [setCards]
   );
 
-  const useBoardDisplay = (board: Board) => {
+  const updateBoardHeight = useCallback(
+    (boardId: string, height: number) => {
+      setCards((prevCards) =>
+        prevCards.map((card) =>
+          card.id === boardId
+            ? {
+                ...card,
+                height,
+              }
+            : card
+        )
+      );
+    },
+    [setCards]
+  );
+
+  const useBoardDisplay = (
+    board: Board,
+    boardRef: RefObject<HTMLDivElement | null>,
+    isLoading: boolean,
+    isOverlay: boolean = false
+  ) => {
     const storedBoard = cards.find((card) => card.id === board.id);
 
     const zoom = useCanvasStore((state) => state.camera.zoom);
@@ -54,6 +75,7 @@ export function useCardDisplayData() {
     const updateBoardMutation = useUpdateBoard();
 
     const [width, setWidth] = useState(board.width ?? DEFAULT_MIN_WIDTH);
+    const [boardHeight, setBoardHeight] = useState<number>(0);
     const [isResizing, setIsResizing] = useState(false);
 
     const resizeState = useRef<{
@@ -80,9 +102,33 @@ export function useCardDisplayData() {
 
     const minBoardHeight = Math.max(highestTaskCount * TASK_HEIGHT, MIN_BOARD_HEIGHT);
 
+    const trackedHeight = storedBoard?.height ?? boardHeight;
+    const displayHeight = Math.max(trackedHeight, minBoardHeight);
+
     const getWidth = useCallback(() => {
       return Math.max(width, minWidth);
     }, [width, minWidth]);
+
+    useEffect(() => {
+      const element = boardRef.current;
+      if (!element || isOverlay) return;
+
+      const resizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const newHeight = Math.round(
+            entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height
+          );
+
+          updateBoardHeight(board.id, newHeight);
+        }
+      });
+
+      resizeObserver.observe(element);
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }, [board.id, boardRef, isLoading, isOverlay]);
 
     useEffect(() => {
       if (board.width == null) return;
@@ -172,11 +218,12 @@ export function useCardDisplayData() {
       isResizing,
       getWidth,
       handleResizePointerDown,
+      trackedHeight: boardHeight,
       style: {
         left: displayBoard.positionX,
         top: displayBoard.positionY,
         width: getWidth(),
-        height: minBoardHeight,
+        height: isOverlay ? displayHeight : 'auto',
       },
     };
   };
