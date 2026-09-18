@@ -21,9 +21,8 @@ export default function DraggableBehavior({ children }: React.HTMLAttributes<HTM
   const moveTaskMutation = useMoveTask();
 
   const cards = useCardDisplayStore((state) => state.cards);
-  console.log(cards);
 
-  const canvas = useCanvas(boards);
+  const canvas = useCanvas(cards);
 
   type ActiveItem = {
     id: string;

@@ -14,6 +14,7 @@ import { useDeleteTask } from '@/hooks/workspace/task/useDeleteTask';
 import { useCanvas } from '@/hooks/workspace/useCanvas';
 import { Board } from '@/types/board';
 import { useBoardContext } from '@/contexts/BoardContext';
+import { useCardDisplayStore } from '@/contexts/CardDisplayContext';
 
 interface BoardContextMenuProps {
   children: React.ReactNode;
@@ -32,7 +33,9 @@ export default function AccessibleContextMenu({ children }: BoardContextMenuProp
   const { boards = [] as Board[] } = useBoardContext();
 
   const select = useSelect();
-  const canvas = useCanvas(boards);
+
+  const cards = useCardDisplayStore((state) => state.cards);
+  const canvas = useCanvas(cards);
   const elementType = select.value.type;
 
   const handleDelete = async () => {

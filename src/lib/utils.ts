@@ -1,4 +1,4 @@
-import { Board } from '@/types/board';
+import { CardDisplay } from '@/stores/cardDisplayStore';
 
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -10,7 +10,7 @@ interface Bounds {
   maxY: number;
 }
 
-export function getContentBounds(boards: Board[]): Bounds {
+export function getContentBounds(boards: CardDisplay[]): Bounds {
   if (boards.length === 0) {
     return {
       minX: -1000,
@@ -31,7 +31,7 @@ export function getContentBounds(boards: Board[]): Bounds {
 
     maxX = Math.max(maxX, board.positionX + board.width);
 
-    maxY = Math.max(maxY, board.positionY + 200);
+    maxY = Math.max(maxY, board.positionY + board.height);
   }
 
   return {
