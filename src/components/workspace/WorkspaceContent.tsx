@@ -2,12 +2,12 @@
 
 import BoardCard from '@/components/workspace/cards/BoardCard';
 import { Board } from '@/types/board';
-import Viewport from './Viewport';
-import World from './World';
+import Viewport from './content/Viewport';
+import World from './content/World';
 import AccessibleContextMenu from './ContextMenu/ContextMenu';
-import DraggableBehavior from './DraggableBehavior';
 import { useBoardContext } from '@/contexts/BoardContext';
-import Grid from './Grid';
+import Grid from './content/Grid';
+import DraggableBehavior from './content/DraggableBehavior';
 
 export default function WorkspaceContent() {
   const { boards = [] as Board[], isLoading, error } = useBoardContext();

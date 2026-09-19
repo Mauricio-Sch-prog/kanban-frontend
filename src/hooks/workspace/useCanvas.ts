@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 const MIN_ZOOM = 0.1;
 const MAX_ZOOM = 4;
 
-const CONTENT_PADDING = 500;
+const CONTENT_PADDING = 2000;
 
 export function useCanvas(boards: CardDisplay[]) {
   const camera = useCanvasStore((state) => state.camera);

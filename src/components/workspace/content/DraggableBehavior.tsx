@@ -7,12 +7,12 @@ import { useMoveLane } from '@/hooks/workspace/lane/useMoveLane';
 import { useMoveTask } from '@/hooks/workspace/task/useMoveTask';
 import { Board } from '@/types/board';
 import { useBoardContext } from '@/contexts/BoardContext';
-import BoardCard from '@/components/workspace/cards/BoardCard'; // <-- Import your BoardCard
-import LaneCard from './cards/LaneCard';
 import { Lane } from '@/types/lane';
 import { Task } from '@/types/task';
-import TaskCard from './cards/TaskCard';
 import { useCardDisplayStore } from '@/contexts/CardDisplayContext';
+import BoardCard from '@/components/workspace/cards/BoardCard'; // <-- Import your BoardCard
+import LaneCard from '../cards/LaneCard';
+import TaskCard from '../cards/TaskCard';
 
 export default function DraggableBehavior({ children }: React.HTMLAttributes<HTMLDivElement>) {
   const { boards = [] as Board[] } = useBoardContext();
