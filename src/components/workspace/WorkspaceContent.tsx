@@ -7,6 +7,7 @@ import World from './World';
 import AccessibleContextMenu from './ContextMenu/ContextMenu';
 import DraggableBehavior from './DraggableBehavior';
 import { useBoardContext } from '@/contexts/BoardContext';
+import Grid from './Grid';
 
 export default function WorkspaceContent() {
   const { boards = [] as Board[], isLoading, error } = useBoardContext();
@@ -26,6 +27,7 @@ export default function WorkspaceContent() {
   return (
     <DraggableBehavior>
       <Viewport>
+        <Grid />
         <AccessibleContextMenu>
           <World>
             {sortedBoards.map((board: Board) => (

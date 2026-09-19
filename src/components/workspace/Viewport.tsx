@@ -1,16 +1,12 @@
-import { useBoardContext } from '@/contexts/BoardContext';
 import { useCardDisplayStore } from '@/contexts/CardDisplayContext';
 import { useCanvas } from '@/hooks/workspace/useCanvas';
 import { useDisableBrowserZoom } from '@/hooks/workspace/useDisableBrowserZoom';
 import useSelect from '@/hooks/workspace/useSelect';
-import { Board } from '@/types/board';
 
 export default function Viewport({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  const { boards = [] as Board[] } = useBoardContext();
-
   const cards = useCardDisplayStore((state) => state.cards);
-  
-    const canvas = useCanvas(cards);
+
+  const canvas = useCanvas(cards);
   const select = useSelect();
   useDisableBrowserZoom();
 

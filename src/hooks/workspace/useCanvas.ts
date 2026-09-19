@@ -1,7 +1,7 @@
 import { useCanvasStore } from '@/contexts/CanvasContext';
 import { getContentBounds } from '@/lib/utils';
 import { Camera } from '@/stores/canvasStore';
-import { Board } from '@/types/board';
+import { CardDisplay } from '@/stores/cardDisplayStore';
 import { useEffect, useRef, useState } from 'react';
 
 const MIN_ZOOM = 0.1;
@@ -9,7 +9,7 @@ const MAX_ZOOM = 4;
 
 const CONTENT_PADDING = 500;
 
-export function useCanvas(boards: Board[]) {
+export function useCanvas(boards: CardDisplay[]) {
   const camera = useCanvasStore((state) => state.camera);
   const mouseWorld = useCanvasStore((state) => state.mouseWorld);
   const isDragging = useCanvasStore((state) => state.isDragging);
